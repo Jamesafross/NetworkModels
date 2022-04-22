@@ -1,4 +1,5 @@
 using Distributed,LinearAlgebra,SharedArrays,Plots
+
 if nprocs() < 5
     addprocs(5)
     println("Number of Workers = ", nworkers())
@@ -15,7 +16,7 @@ end
     include("DEfunctions.jl")
     include("modelFunc.jl")
     HOMEDIR=homedir()
-    WORKDIR="$HOMEDIR/HCP_Code/WilsonCowan_Distributed"
+    WORKDIR="$HOMEDIR/NetworkModels/WilsonCowan_Distributed"
     #load data and make struct & dist matrices
 
     C = load("$WORKDIR/data/PaulSC.jld","C")
