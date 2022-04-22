@@ -38,9 +38,9 @@ bP = ballonModelParameters()
 # Stimulation Setup
 
 
-nWindows = 2
-tWindows = 300.0
-nTrials = 2
+nWindows = 5
+tWindows = 500.0
+nTrials = 10
 
 R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
 
@@ -49,4 +49,5 @@ R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
 
     R_Array[:,:,:,i] = WCModelRun(WCp,bP,nWindows,tWindows,C,lags,N)
 end
-    
+
+save("$WORKDIR/data/R_array.jld","R_Array","R_Array")    

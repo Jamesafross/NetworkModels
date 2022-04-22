@@ -22,7 +22,7 @@ function WCModelRun(WCp,bP,nWindows,tWindows,C,lags,N)
         end
         
         tspan = (0.0,tWindows)
-        println(adpTime)
+        #println(adpTime)
         p = WCp,nP,adpTime,stimNodes,Tstim,hparams,j
         if j == 1
             prob = SDDEProblem(WC, dW,u0, h1, tspan, p)
