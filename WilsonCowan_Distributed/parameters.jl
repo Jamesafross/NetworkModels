@@ -6,11 +6,11 @@
     θE::R  = 1.
     θI::R  = 1.
     β::R = 4.
-    η::R  = 0.14
-    σ::R  = 0.001
+    η::R  = 0.22
+    σ::R  = 0.005
     τE::R  = 0.01
     τI::R  =0.02
-    τx::R = 0.1
+    τx::R = .01
     Pext::R  =0.31
 
 end
@@ -19,5 +19,10 @@ mutable struct networkParameters
     W::Matrix{Float64}
     lags::Matrix{Float64}
     N::Int64
+end
+
+mutable struct modelOpts
+    stimOpt::String
+    adapt::String
 end
 

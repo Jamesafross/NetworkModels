@@ -12,10 +12,10 @@ function make_uhist(tgrid,u)
     return interp
 end
 
-function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64})
+function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64},minSC::Float64)
     @inbounds for ii = 1:N
         @inbounds for jj = 1:N
-            if W[jj,ii] != 0.0
+            if W[jj,ii]  > 0.0
                 if lags[jj,ii] == 0.0
                      W[jj,ii] += 0.1*u[ii]*(u[jj] - h(hparams,t-1.0;idxs=jj))
                 else
@@ -23,7 +23,7 @@ function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{
                 end
             end
         end
-        W[W .< 0.0] .= 0.0
+        W[0. .< W .< minSC] .= minSC
         if sum(W[:,ii]) != 0.0
         @views W[:,ii] = W[:,ii]./sum(W[:,ii])
         end
@@ -44,9 +44,9 @@ end
 
 f(x::Float64,β::Float64,θ::Float64) = 1/(1+exp(-β*(x-θ)))
 
-function stim(t,i,stimNodes,Tstim,nRun)
-    if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && nRun == 1
-        return 0.
+function stim(t,i,stimNodes,Tstim,nRun,stimOpt)
+    if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && (stimOpt == "on" || stimOpt == "ON")
+        return -1.
     else
         return 0.
     end
@@ -66,6 +66,25 @@ function h2(hparams,t;idxs = nothing)
         if t < 0
             return u_hist[idxs](t)
         end
+end
+
+function normalise(W,N)
+
+   for ii = 1:N
+    W[W .< 0.0] .= 0.0
+        if sum(W[:,ii]) != 0.0
+        @views W[:,ii] = W[:,ii]./sum(W[:,ii])
+        end
+
+    end
+
+     @inbounds for k=1:N #Maintaining symmetry in the weights between regions
+        @inbounds for l = k:N
+                 W[k,l] = (W[k,l]+W[l,k])/2
+                 W[l,k] = W[k,l]
+        end
+    end
+    return W
 end
 
 
