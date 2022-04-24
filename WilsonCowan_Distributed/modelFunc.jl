@@ -1,6 +1,7 @@
-function WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,opts)
+function WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
     adpTime = 15.0
     Rvec = zeros(N,N,nWindows)
+    Wvec = zeros(N,N,nWindows)
     nP = networkParameters(W, lags, N)
     
         
@@ -27,7 +28,7 @@ function WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,opts)
         println(nP.W[1,2])
         println(adpTime)
 
-        p = WCp,nP,adpTime,stimNodes,Tstim,hparams,j,minSC,opts
+        p = WCp,nP,adpTime,stimNodes,Tstim,hparams,j,minSC,W_sum,opts
         if j == 1
             prob = SDDEProblem(WC, dW,u0, h1, tspan, p)
         else
@@ -51,6 +52,8 @@ function WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,opts)
                 Rvec[m,n,j]=Rvec[n,m,j];
             end
         end
+
+        Wvec[:,:,j] = nP.W
 
     end
 

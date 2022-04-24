@@ -8,7 +8,7 @@ end
 
 
 @everywhere begin 
-    normaliseSC = 1
+    normaliseSC = 0
     using StochasticDelayDiffEq,Parameters,Statistics,StatsBase,DifferentialEquations,JLD
     include("functions.jl")
     include("../Balloon_Model/balloonModelFunctions.jl")
@@ -30,6 +30,12 @@ end
     Tstim = [60,90]
     if normaliseSC == 1
         SC = normalise(SC,N)
+        W_sum = ones(N)
+    else
+        W_sum = zeros(N)
+        for i = 1:N
+            W_sum[i] = sum(SC[:,i])
+        end 
     end
     minSC = minimum(SC[SC.>0.0])
 end
@@ -46,20 +52,22 @@ bP = ballonModelParameters()
 
 nWindows = 1
 tWindows = 300.0
-nTrials = 1
+nTrials = 2
 
 R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
+W_save = SharedArray(zeros(N,N,nWindows,nTrials))
 W = zeros(N,N)
 W .= SC
-stimOpts = "on"
-adapt = "off"
+stimOpts = "off"
+adapt = "on"
+
 
 
 opts= modelOpts(stimOpts,adapt)
 
 @sync @distributed for i = 1:nTrials
 
-    R_Array[:,:,:,i],W[:,:] = WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,opts)
+    R_Array[:,:,:,i],W_save[:,:,:,i] = WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 end
 
 save("$WORKDIR/data/R_array.jld","R_Array","R_Array")    

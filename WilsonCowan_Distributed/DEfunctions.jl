@@ -1,5 +1,5 @@
 function WC(du,u,h,p,t)
-    WCp,nP,adpTime,stimNodes,Tstim,hparams,nRun,minSC,opts = p
+    WCp,nP,adpTime,stimNodes,Tstim,hparams,nRun,minSC,W_sum,opts = p
 
     @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,β,η,σ = WCp
     @unpack W,lags,N = nP
@@ -10,7 +10,7 @@ function WC(du,u,h,p,t)
         #if t > 15.0
         if adapt == "on" || adapt == "ON"
             if t ≈ adpTime
-                nP.W .= adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC)
+                nP.W .= adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
                 adpTime += 0.01
             end
         end
@@ -37,7 +37,7 @@ function WC(du,u,h,p,t)
 end
 
 function dW(du,u,h,p,t)
-    WCp,nP,adpTime,stimNodes,Tstim,hparams,nRum,minSC = p
+    WCp,nP,adpTime,stimNodes,Tstim,hparams,nRum,minSC,W_sum,opts = p
     @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,η,σ = WCp
     @unpack W,lags,N = nP
     for i = 1:N
