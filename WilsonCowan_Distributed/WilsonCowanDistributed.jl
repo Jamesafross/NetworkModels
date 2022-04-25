@@ -1,7 +1,7 @@
 using Distributed,LinearAlgebra,SharedArrays,Plots
 
-if nprocs() < 2
-    addprocs(2)
+if nprocs() < 8
+    addprocs(8)
     println("Number of Workers = ", nworkers())
 end
 #includes
@@ -50,9 +50,9 @@ bP = ballonModelParameters()
 # Stimulation Setup
 
 
-nWindows = 1
-tWindows = 200.0
-nTrials = 2
+nWindows = 25
+tWindows = 300.0
+nTrials = 10
 
 R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
 fitArray = zeros(nWindows,nTrials)
