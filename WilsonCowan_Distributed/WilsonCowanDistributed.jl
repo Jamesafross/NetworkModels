@@ -51,10 +51,11 @@ bP = ballonModelParameters()
 
 
 nWindows = 1
-tWindows = 300.0
+tWindows = 200.0
 nTrials = 2
 
 R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
+fitArray = zeros(nWindows,nTrials)
 W_save = SharedArray(zeros(N,N,nWindows,nTrials))
 W = zeros(N,N)
 W .= SC
@@ -70,4 +71,16 @@ opts= modelOpts(stimOpts,adapt)
     R_Array[:,:,:,i],W_save[:,:,:,i] = WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 end
 
-save("$WORKDIR/data/R_array.jld","R_Array","R_Array")    
+for i = 1:nWindows
+	for j = 1:nTrials
+		fitArray[i,j] = fitR(R_Array[:,:,i,j],PaulFCmean)
+	end
+end
+
+global dataWC = []
+for i = 1:nTrials
+	global dataWC = cat(dataWC,dataStruct(R_Array[:,:,:,i],fitArray[:,i],W_save[:,:,:,i]),dims=1)
+end 
+save("$WORKDIR/data/dataWC.jld","dataWC","dataWC")
+
+    

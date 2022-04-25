@@ -26,3 +26,9 @@ mutable struct modelOpts
     adapt::String
 end
 
+mutable struct dataStruct
+	modelR
+	fit
+	SC
+end
+	
