@@ -81,6 +81,6 @@ global dataWC = []
 for i = 1:nTrials
 	global dataWC = cat(dataWC,dataStruct(R_Array[:,:,:,i],fitArray[:,i],W_save[:,:,:,i]),dims=1)
 end 
-save("$WORKDIR/data/dataWC.jld","dataWC","dataWC")
+save("$WORKDIR/data/dataWC.jld","dataWC",dataWC)
 
     
