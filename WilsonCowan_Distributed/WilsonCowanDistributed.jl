@@ -40,7 +40,7 @@ end
     end
     minSC = minimum(SC[SC.>0.0])
 end
-PaulFCmean = load("$InDATADIR/data/PaulFCmean_140.jld","paulFCmean_140")
+PaulFCmean = load("$InDATADIR/PaulFCmean_140.jld","paulFCmean_140")
 
 # get parameters and make structures
 
