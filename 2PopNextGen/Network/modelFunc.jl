@@ -6,7 +6,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
     nP = networkParameters(W, lags, N)
     for j = 1:nWindows
 
-        println("working on window ",j)
+     
         if j == 1
             u0 = zeros(8N)
             u0[:] = makeInitConds(NGp)
@@ -24,8 +24,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
         tspan = (0.0,tWindows)
         adpStops = collect(adpTime:0.01:tWindows)
         #println(adpTime)
-        println(nP.W[1,2])
-        println(adpTime)
+       
 
         p = NGp,nP,adpTime,stimNodes,Tstim,hparams,j,minSC,W_sum,opts
         if j == 1
@@ -34,7 +33,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
             prob = DDEProblem(NextGen,u0, h2, tspan, p)
         end
         
-        println("Solving Next-Gen model")
+     
         global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.05)
 
 
@@ -43,9 +42,9 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
         tspanB = (sol.t[1],sol.t[end])
         balloonParams = bP,BalloonIn
         b0 =  cat(zeros(N),ones(3N),dims=1)
-        println("running balloon model...")
+       
         out,v_save = runBalloon(b0,balloonParams,tspanB,collect(sol.t[1]+15:2:sol.t[end]))
-        println("done")
+        
         out_trans=(out')    
 
         for n=1:N
