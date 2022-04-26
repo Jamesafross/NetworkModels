@@ -19,10 +19,11 @@ end
     include("modelFunc.jl")
     HOMEDIR=homedir()
     WORKDIR="$HOMEDIR/NetworkModels/WilsonCowan_Distributed"
+    InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
     #load data and make struct & dist matrices
 
-    SC = load("$WORKDIR/data/PaulSC.jld","C")
-    dist = load("$WORKDIR/data/PaulDist.jld","dist")
+    SC = load("$InDATADIR/PaulSC.jld","C")
+    dist = load("$InDATADIR/PaulDist.jld","dist")
     N = size(SC,1) # number of nodes
     c =7000. # conductance velocity
     lags = round.(dist./c,digits=2) # axonal delays
@@ -39,7 +40,7 @@ end
     end
     minSC = minimum(SC[SC.>0.0])
 end
-PaulFCmean = load("$WORKDIR/data/PaulFCmean_140.jld","paulFCmean_140")
+PaulFCmean = load("$InDATADIR/data/PaulFCmean_140.jld","paulFCmean_140")
 
 # get parameters and make structures
 

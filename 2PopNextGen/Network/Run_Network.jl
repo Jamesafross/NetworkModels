@@ -1,6 +1,7 @@
 using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,StochasticDelayDiffEq,Random,NLsolve,Statistics,Parameters
 HOMEDIR = homedir()
-WORKDIR="$HOMEDIR/NetworkModels/WilsonCowan_Distributed"
+WORKDIR="$HOMEDIR/NetworkModels/2PopNextGen"
+InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
 include("./functions/stability.jl")
 include("./functions/rhsFunctions.jl")
 include("./functions/functions.jl")
@@ -12,11 +13,15 @@ include("../../Balloon_Model/parameter_sets.jl")
 
 normaliseSC = 0
 #load data and make struct & dist matrices
-SC = load("$WORKDIR/data/PaulSC.jld","C")
-dist = load("$WORKDIR/data/PaulDist.jld","dist")
+
+#load data and make struct & dist matrices
+
+SC = load("$InDATADIR/PaulSC.jld","C")
+dist = load("$InDATADIR/PaulDist.jld","dist")
+
 N = size(SC,1) # number of nodes
 c =7000. # conductance velocity
-lags = round.(dist./c,digits=2) # axonal delays
+lags = round.(dist./c,digits=1) # axonal delays
 stimNodes = [21,39]
 Tstim = [60,90]
 if normaliseSC == 1
@@ -29,11 +34,11 @@ else
     end 
 end
 minSC = minimum(SC[SC.>0.0])
-PaulFCmean = load("$WORKDIR/data/PaulFCmean_140.jld","paulFCmean_140")
+PaulFCmean = load("$InDATADIR/PaulFCmean_140.jld","paulFCmean_140")
 
 
 
-c =7000
+c =20000
 lags = round.(dist./c,digits=3)
 lags[lags .== 0.001] .= 0.0
 nonzeros_indx = findall(SC.> 0.0)
@@ -41,9 +46,8 @@ clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for
 W = zeros(N,N)
 W.=SC
 
-W = W+(1/NGp.κ)diagm(ones(N))
-
 NGp = NextGen2PopParams()
+W = W+(1/NGp.κ)diagm(ones(N))
 Np = networkParameters(W,lags,N)
 NoiseP = noiseParameters()
 
