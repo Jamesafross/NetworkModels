@@ -57,7 +57,7 @@ function WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 
     end
 
-    return Rvec,nP.Wvec
+    return Rvec,Wvec
 
 end
 

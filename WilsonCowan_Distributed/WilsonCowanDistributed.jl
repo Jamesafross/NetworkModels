@@ -50,9 +50,9 @@ bP = ballonModelParameters()
 # Stimulation Setup
 
 
-nWindows = 25
+nWindows = 8
 tWindows = 300.0
-nTrials = 10
+nTrials = 40
 
 R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
 fitArray = zeros(nWindows,nTrials)
@@ -61,10 +61,8 @@ W = zeros(N,N)
 W .= SC
 stimOpts = "off"
 adapt = "on"
-
-
-
-opts= modelOpts(stimOpts,adapt)
+opts=modelOpts(stimOpts,adapt)
+etavec = LinRange(0.08,0.15,nTrials)
 
 @sync @distributed for i = 1:nTrials
 
@@ -72,6 +70,7 @@ opts= modelOpts(stimOpts,adapt)
 end
 
 for i = 1:nWindows
+WCp.η= etavec[i]
 	for j = 1:nTrials
 		fitArray[i,j] = fitR(R_Array[:,:,i,j],PaulFCmean)
 	end
