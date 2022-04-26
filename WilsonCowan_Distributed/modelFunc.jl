@@ -20,7 +20,7 @@ function WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
             iStart = findfirst(sol.t .> tWindows - 1.0)
             u_hist = make_uhist(sol.t[iStart:end] .- sol.t[end],sol[:,iStart:end])
             hparams = u_hist
-            adpTime = 0.001
+            adpTime = 0.01
         end
         
         tspan = (0.0,tWindows)

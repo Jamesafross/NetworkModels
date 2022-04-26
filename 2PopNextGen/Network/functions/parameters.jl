@@ -2,7 +2,7 @@ using Parameters
 @with_kw struct NextGen2PopParams{R}
     ΔE::R = 0.5
     ΔI::R = 0.5
-    η_0E::R = -14.78
+    η_0E::R = -14.18
     η_0I::R =-10.
     τE::R = 0.05
     τI::R = 0.06
@@ -38,4 +38,22 @@ mutable struct networkParameters
     W::Matrix{Float64}
     lags::Matrix{Float64}
     N::Int64
+end
+
+
+mutable struct modelOpts
+    stimOpt::String
+    adapt::String
+end
+
+mutable struct dataStruct
+	modelR
+	fit
+	SC
+end
+
+mutable struct pSweepData
+	κ
+	ηE
+	fit
 end

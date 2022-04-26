@@ -56,18 +56,63 @@ function adapt_global_coupling(p,N::Int64,W::Matrix{Float64},lags::Matrix{Float6
   
 end
 
-function getHCPdata()
-    HOMEDIR=homedir()
-    DIR = "$HOMEDIR/PostDocFiles/connectivity_data/HCP"
+function h1(hparams,t;idxs = nothing)
+    #history function used on first window
+    u0 = hparams
+        if t < 0
+        return u0[idxs]
+    end
+end
 
-    file = matopen("$DIR/HCPstr.mat");
-    W= read(file, "W")
-    close(file);
+function h2(hparams,t;idxs = nothing)
+    #history function used on windows > 1
+    u_hist= hparams
+        if t < 0
+            return u_hist[idxs](t)
+        end
+end
+
+function normalise(W,N)
+
+   for ii = 1:N
+    W[W .< 0.0] .= 0.0
+        if sum(W[:,ii]) != 0.0
+        @views W[:,ii] = W[:,ii]./sum(W[:,ii])
+        end
+
+    end
+
+     @inbounds for k=1:N #Maintaining symmetry in the weights between regions
+        @inbounds for l = k:N
+                 W[k,l] = (W[k,l]+W[l,k])/2
+                 W[l,k] = W[k,l]
+        end
+    end
+    return W
+end
+
+
+function makeInitConds(NGp)
+    @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
+    κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
     
-    file = matopen("$DIR/HCPdist.mat");
-    dist = read(file, "dist")
-    close(file);
-    N = size(dist,1)
+    params = κSEE,κSIE,κSEI,κSII,
+    αEE,αIE,αEI,αII,
+    κVEE,κVIE,κVEI,κVII,
+    VsynEE,VsynIE,VsynEI,VsynII,ΔE,ΔI,η_0E,η_0I,τE,τI
 
-    return W,dist,N
+    rE0, rI0, vE0, vI0, gEE0, gEI0, gIE0, gII0 = init_conds_SS(params)
+    perturb = 0.1*rand(8*N)
+
+    u0 = zeros(8*N)
+    u0[1:N] .= rE0
+    u0[N+1:2N] .= rI0
+    u0[2N+1:3N] .= vE0
+    u0[3N+1:4N] .= vI0
+    u0[4N+1:5N] .= gEE0
+    u0[5N+1:6N] .= gIE0
+    u0[6N+1:7N] .= gEI0
+    u0[7N+1:8N] .= gII0
+
+    u0 = u0 + perturb
 end

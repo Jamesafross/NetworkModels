@@ -66,12 +66,12 @@ opts=modelOpts(stimOpts,adapt)
 etavec = LinRange(0.08,0.15,nTrials)
 
 @sync @distributed for i = 1:nTrials
+    println("working on Trial: ",i)
 
     R_Array[:,:,:,i],W_save[:,:,:,i] = WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 end
 
 for i = 1:nWindows
-WCp.η= etavec[i]
 	for j = 1:nTrials
 		fitArray[i,j] = fitR(R_Array[:,:,i,j],PaulFCmean)
 	end
