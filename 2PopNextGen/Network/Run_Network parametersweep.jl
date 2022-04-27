@@ -53,10 +53,10 @@ tWindows = 300
 stimOpts = "off"
 adapt = "on"
 opts=modelOpts(stimOpts,adapt)
-nTrials1 = 3
-nTrials2 = 10
+nTrials1 = 20
+nTrials2 = 20
 κVec = LinRange(0.09,0.11,nTrials1)
-η_0EVec = LinRange(-14.2,-14.4,nTrials2)
+η_0EVec = LinRange(-14.0,-14.4,nTrials2)
 
 Rsave = SharedArray(zeros(N,N,nWindows,nTrials1,nTrials2))
 for i = 1:nTrials1
@@ -87,6 +87,8 @@ for i = 1:nTrials1
         pSweep[i,j] = pSweepData(κVec[i],η_0EVec[j],fitp)
     end
 end
+
+
 
 
 

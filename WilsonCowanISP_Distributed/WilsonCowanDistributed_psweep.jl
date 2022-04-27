@@ -10,13 +10,13 @@ end
 @everywhere begin 
     normaliseSC = 0
     using StochasticDelayDiffEq,Parameters,Statistics,StatsBase,DifferentialEquations,JLD
-    include("functions.jl")
+    include("functions/functions.jl")
     include("../Balloon_Model/balloonModelFunctions.jl")
     include("../Balloon_Model/balloonModelRHS.jl")
     include("../Balloon_Model/parameter_sets.jl")
-    include("parameters.jl")
-    include("DEfunctions.jl")
-    include("modelFunc.jl")
+    include("functions/parameters.jl")
+    include("functions/DEfunctions.jl")
+    include("functions/modelFunc.jl")
     HOMEDIR=homedir()
     WORKDIR="$HOMEDIR/NetworkModels/WilsonCowan_Distributed"
     InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
