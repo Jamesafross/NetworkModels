@@ -67,7 +67,7 @@ etavec = LinRange(0.08,0.15,nTrials)
 
 @sync @distributed for i = 1:nTrials
     WCp = WCparams(η= etavec[i])
-    R_Array[:,:,:,i],W_save[:,:,:,i] = WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+    R_Array[:,:,:,i],W_save[:,:,:,i] = WCRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 end
 
 for i = 1:nWindows

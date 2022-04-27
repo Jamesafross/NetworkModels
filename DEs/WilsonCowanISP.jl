@@ -1,4 +1,4 @@
-function WCISP(du,u,h,p,t)
+function WC_ISP(du,u,h,p,t)
     WCp,nP,adpTime,stimNodes,Tstim,hparams,nRun,minSC,W_sum,opts = p
 
     @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,β,η,σ,τISP,ρ = WCp
@@ -35,7 +35,7 @@ function WCISP(du,u,h,p,t)
     end
 end
 
-function dW(du,u,h,p,t)
+function dW_ISP(du,u,h,p,t)
     WCp,nP,adpTime,stimNodes,Tstim,hparams,nRum,minSC,W_sum,opts = p
     @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,β,η,σ,τISP,ρ = WCp
     @unpack W,lags,N = nP

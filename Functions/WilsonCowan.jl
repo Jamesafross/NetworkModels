@@ -1,4 +1,8 @@
-function WCISPRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+function f(x::Float64,β::Float64,θ::Float64)
+    return  1/(1+exp(-β*(x-θ)))
+end
+
+function WCRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
     adpTime = 15.0
     Rvec = zeros(N,N,nWindows)
     Wvec = zeros(N,N,nWindows)
@@ -7,9 +11,11 @@ function WCISPRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
         
     for j = 1:nWindows
        
+        println("working on window ",j)
         if j == 1
-            u0 = 0.1rand(4N)
-            u0[2N+1:3N] .= -2.5
+            u0 = 0.1rand(3N)
+        
+           
             hparams = u0
 
         else
@@ -23,13 +29,14 @@ function WCISPRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
         
         tspan = (0.0,tWindows)
         #println(adpTime)
-  
+        println(nP.W[1,2])
+        println(adpTime)
 
         p = WCp,nP,adpTime,stimNodes,Tstim,hparams,j,minSC,W_sum,opts
         if j == 1
-            prob = SDDEProblem(WCISP, dW,u0, h1, tspan, p)
+            prob = SDDEProblem(WC, dW,u0, h1, tspan, p)
         else
-            prob = SDDEProblem(WCISP, dW,u0, h2, tspan, p)
+            prob = SDDEProblem(WC, dW,u0, h2, tspan, p)
         end
         @time global sol = solve(prob,EM(),dt=0.001,maxiters = 1e20)
        
@@ -56,16 +63,6 @@ function WCISPRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 
     return Rvec,Wvec
 
-end
-
-function DistributedLoop(R_Array,W_save,WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
-
-    @sync @distributed for i = 1:nTrials
-        println("working on Trial: ",i)
-        R_Array[:,:,:,i],W_save[:,:,:,i]= WCISPRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
-    end
-
-    return R_Array,W_save
 end
 
 

@@ -1,4 +1,4 @@
-function WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+function WCRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
     adpTime = 15.0
     Rvec = zeros(N,N,nWindows)
     Wvec = zeros(N,N,nWindows)

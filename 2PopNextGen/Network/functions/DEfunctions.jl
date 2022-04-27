@@ -43,9 +43,6 @@ function NextGenNoisy(du,u,h,p,t)
         gEI=u[i+6N]
         gII=u[i+7N]
       
-     
-       
-       
         #rE
         du[i] =(1. /τE)*(-gEE*rE -gEI*rE - κVEE*rE - κVEI*rE +2. * rE * vE + (ΔE / (τE*pi)))
         #rI

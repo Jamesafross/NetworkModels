@@ -1,0 +1,5 @@
+include("DEfunctions.jl")
+include("modelFunc.jl")
+include("parameters.jl")
+include("stability.jl")
+include("functions.jl")

@@ -1,4 +1,4 @@
-using Interpolations
+
 
 function E_NL(fin::Float64, E_0::Float64)
     return 1.0 - (1.0 - E_0)^(1.0 / fin)

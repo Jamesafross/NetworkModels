@@ -1,7 +1,7 @@
 using Distributed,LinearAlgebra,SharedArrays,Plots
 
-if nprocs() < 8
-    addprocs(8)
+if nprocs() < 2
+    addprocs(2)
     println("Number of Workers = ", nworkers())
 end
 #includes
@@ -9,38 +9,26 @@ end
 
 @everywhere begin 
     normaliseSC = 0
-    using StochasticDelayDiffEq,Parameters,Statistics,StatsBase,DifferentialEquations,JLD
-    include("functions.jl")
+    using StochasticDelayDiffEq,Parameters,Statistics,StatsBase,DifferentialEquations,JLD,Interpolations
+    include("functions/functions.jl")
     include("../Balloon_Model/balloonModelFunctions.jl")
     include("../Balloon_Model/balloonModelRHS.jl")
     include("../Balloon_Model/parameter_sets.jl")
-    include("parameters.jl")
-    include("DEfunctions.jl")
-    include("modelFunc.jl")
+    include("functions/parameters.jl")
+    include("functions/DEfunctions.jl")
+    include("functions/modelFunc.jl")
     HOMEDIR=homedir()
     WORKDIR="$HOMEDIR/NetworkModels/WilsonCowan_Distributed"
     InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
+    include("$InDATADIR/getData.jl")
     #load data and make struct & dist matrices
+    SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=2)
 
-    SC = load("$InDATADIR/PaulSC.jld","C")
-    dist = load("$InDATADIR/PaulDist.jld","dist")
-    N = size(SC,1) # number of nodes
-    c =7000. # conductance velocity
-    lags = round.(dist./c,digits=2) # axonal delays
-    stimNodes = [21,39]
-    Tstim = [60,90]
-    if normaliseSC == 1
-        SC = normalise(SC,N)
-        W_sum = ones(N)
-    else
-        W_sum = zeros(N)
-        for i = 1:N
-            W_sum[i] = sum(SC[:,i])
-        end 
-    end
-    minSC = minimum(SC[SC.>0.0])
+
+
+  
 end
-PaulFCmean = load("$InDATADIR/PaulFCmean_140.jld","paulFCmean_140")
+
 
 # get parameters and make structures
 
@@ -53,22 +41,21 @@ bP = ballonModelParameters()
 
 nWindows = 8
 tWindows = 300.0
-nTrials = 40
-
-R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
+nTrials = 1
 fitArray = zeros(nWindows,nTrials)
+R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
 W_save = SharedArray(zeros(N,N,nWindows,nTrials))
 W = zeros(N,N)
 W .= SC
 stimOpts = "off"
 adapt = "on"
 opts=modelOpts(stimOpts,adapt)
-etavec = LinRange(0.08,0.15,nTrials)
+
 
 @sync @distributed for i = 1:nTrials
     println("working on Trial: ",i)
 
-    R_Array[:,:,:,i],W_save[:,:,:,i] = WCModelRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+    R_Array[:,:,:,i],W_save[:,:,:,i] = WCRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 end
 
 for i = 1:nWindows

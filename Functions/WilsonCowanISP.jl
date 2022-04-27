@@ -58,7 +58,7 @@ function WCISPRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 
 end
 
-function DistributedLoop(R_Array,W_save,WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+function WCISPDistributedLoop(R_Array,W_save,WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 
     @sync @distributed for i = 1:nTrials
         println("working on Trial: ",i)

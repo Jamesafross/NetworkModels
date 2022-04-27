@@ -1,89 +1,73 @@
 #includes 
-using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,StochasticDelayDiffEq,Random,NLsolve,Statistics,Parameters
+
+using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,StochasticDelayDiffEq,Random,NLsolve,Statistics,Parameters,Interpolations
+
 HOMEDIR = homedir()
 WORKDIR="$HOMEDIR/NetworkModels/2PopNextGen"
 InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
-include("./functions/stability.jl")
-include("./functions/DEfunctions.jl")
-include("./functions/functions.jl")
-include("./functions/parameters.jl")
-include("./modelFunc.jl")
-include("../../Balloon_Model/balloonModelFunctions.jl")
-include("../../Balloon_Model/balloonModelRHS.jl")
-include("../../Balloon_Model/parameter_sets.jl")
+include("./functions/NextGenFunctions.jl")
+include("../../Balloon_Model/BalloonModel.jl")
+include("$InDATADIR/getData.jl")
 
 
-normaliseSC = 0
-#load data and make struct & dist matrices
-SC = load("$InDATADIR/PaulSC.jld","C")
-dist = load("$InDATADIR/PaulDist.jld","dist")
-PaulFCmean = load("$InDATADIR/PaulFCmean_140.jld","paulFCmean_140")
-
-N = size(SC,1) # number of nodes
-c =7000. # conductance velocity
-lags = round.(dist./c,digits=2) # axonal delays
 stimNodes = [21,39]
 Tstim = [60,90]
-if normaliseSC == 1
-    SC = normalise(SC,N)
-    W_sum = ones(N)
-else
-    W_sum = zeros(N)
-    for i = 1:N
-        W_sum[i] = sum(SC[:,i])
-    end 
-end
-minSC = minimum(SC[SC.>0.0])
 
 
+#load data and make struct & dist matrices
+c=7000.
+SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=2)
+PaulFCmean = PaulFCmean[1:size(PaulFCmean,1) .!= 100,1:size(PaulFCmean,1) .!= 100 ]
+PaulFCmean = PaulFCmean .- diagm(ones(N))
 
-
-c =7000
-lags = round.(dist./c,digits=2)
-lags[lags .== 0.001] .= 0.0
-nonzeros_indx = findall(SC.> 0.0)
 clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for solver
 W = zeros(N,N)
 W.=SC
-
 NGp = NextGen2PopParams()
 W = W+(1/NGp.κ)diagm(ones(N))
 bP = ballonModelParameters()
-nWindows = 20
+nWindows = 1
 tWindows = 300
 
 stimOpts = "off"
 adapt = "on"
+
 opts=modelOpts(stimOpts,adapt)
 
-
-Rsave,Wsave = NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+println("Running model ... ")
+@time Rsave,Wsave = NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 
 
 fit = zeros(nWindows)
+fit2 = zeros(nWindows)
 for i = 1:nWindows
     fit[i] = fitR(Rsave[:,:,i],PaulFCmean)
+    fit2[i] = fitR((Rsave[:,:,i].^2)./maximum(Rsave[:,:,i].^2),(PaulFCmean.^2)./maximum(PaulFCmean.^2))
 end
 
 if nWindows > 1
     meanR = mean(Rsave[:,:,:],dims=3)
     meanfit = fitR(meanR,PaulFCmean)
+    meanfit2 = fitR(meanR.^2,paulFCmean.^2)
 else
     meanfit = fit
     meanR = Rsave
+    meanfit2=fit2
 end
 
 
 p1 = heatmap(meanR[:,:,1],c=:jet)
 p2 = heatmap(PaulFCmean,c=:jet)
-
+p3 = heatmap((meanR[:,:,1].^2)./maximum(meanR.^2),c=:jet)
+p4 = heatmap((PaulFCmean.^2)./maximum(PaulFCmean.^2),c=:jet)
+p6 = heatmap((SC)/maximum(SC),c=:jet)
 if nWindows > 1
-    p3 = scatter(collect(1:1:nWindows),fit)
-    p = plot(p1,p2,p3,layout=3)
+    p5 = scatter(collect(1:1:nWindows),fit)
+    p = plot(p1,p2,p3,p4,p5,p6,layout=6)
 else
-    p = plot(p1,p2,layout=2)
+    p = plot(p1,p2,p3,p4,p6,layout=5)
 end
 
 
-p[:plot_title]  = "fit = $meanfit"
+p[:plot_title]  = "fit = $meanfit, fit2 = $meanfit2 "
 plot(p)

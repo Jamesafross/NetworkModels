@@ -1,7 +1,7 @@
-function WCISP(du,u,h,p,t)
+function WC(du,u,h,p,t)
     WCp,nP,adpTime,stimNodes,Tstim,hparams,nRun,minSC,W_sum,opts = p
 
-    @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,β,η,σ,τISP,ρ = WCp
+    @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,β,η,σ = WCp
     @unpack W,lags,N = nP
     @unpack stimOpt,adapt=opts
   
@@ -15,6 +15,8 @@ function WCISP(du,u,h,p,t)
             end
         end
       
+
+       
         @inbounds for j = 1:N
             if W[i,j] > 0.0
                 if lags[i,j] > 0.0
@@ -28,18 +30,17 @@ function WCISP(du,u,h,p,t)
         #println(d)
         E = u[i]
         I = u[i+N]
-        du[i] = (1/τE)*(-E + f(cEE*E + stim(t,i,stimNodes,Tstim,nRun,stimOpt) + u[i+2N]*I + u[i+3N]+Pext + (η)*d,β,θE))
-        du[i+N] =(1/τI)*( -I + f(cEI*E + cII*I+u[i+3N],β,θI) )
-        du[i+2N] = (1/τISP)*I*(E - ρ)
-        du[i+3N] = (-1/τx)*u[i+3N]
+        du[i] = (1/τE)*(-E + f(cEE*E + stim(t,i,stimNodes,Tstim,nRun,stimOpt)+  cIE*I + u[i+2N]+Pext + (η)*d,β,θE))
+        du[i+N] =(1/τI)*( -I + f(cEI*E + cII*I+u[i+2N],β,θI) )
+        du[i+2N] = (-1/τx)*u[i+2N]
     end
 end
 
 function dW(du,u,h,p,t)
     WCp,nP,adpTime,stimNodes,Tstim,hparams,nRum,minSC,W_sum,opts = p
-    @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,β,η,σ,τISP,ρ = WCp
+    @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,η,σ = WCp
     @unpack W,lags,N = nP
     for i = 1:N
-        du[i+3N] = σ
+        du[i+2N] = σ
     end
 end

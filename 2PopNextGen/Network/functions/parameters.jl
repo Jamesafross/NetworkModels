@@ -2,7 +2,7 @@ using Parameters
 @with_kw struct NextGen2PopParams{R}
     ΔE::R = 0.5
     ΔI::R = 0.5
-    η_0E::R = -14.18
+    η_0E::R = -14.19
     η_0I::R =-10.
     τE::R = 0.05
     τI::R = 0.06
@@ -22,7 +22,7 @@ using Parameters
     VsynIE::R = 1.5
     VsynEI::R = -0.5
     VsynII::R = -1.0
-    κ::R = 0.10
+    κ::R = 0.098
 end
 
 
