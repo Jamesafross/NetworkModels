@@ -17,6 +17,10 @@ Tstim = [60,90]
 #load data and make struct & dist matrices
 c=7000.
 SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=2)
+
+SC = 0.1*SC
+SC = SC[1:size(SC,1) .!= 100,1:size(SC,1) .!= 100 ]
+N = size(SC,1)
 PaulFCmean = PaulFCmean[1:size(PaulFCmean,1) .!= 100,1:size(PaulFCmean,1) .!= 100 ]
 PaulFCmean = PaulFCmean .- diagm(ones(N))
 
@@ -48,7 +52,7 @@ end
 if nWindows > 1
     meanR = mean(Rsave[:,:,:],dims=3)
     meanfit = fitR(meanR,PaulFCmean)
-    meanfit2 = fitR(meanR.^2,paulFCmean.^2)
+    meanfit2 = fitR(meanR.^2,PaulFCmean.^2)
 else
     meanfit = fit
     meanR = Rsave
@@ -62,7 +66,7 @@ p3 = heatmap((meanR[:,:,1].^2)./maximum(meanR.^2),c=:jet)
 p4 = heatmap((PaulFCmean.^2)./maximum(PaulFCmean.^2),c=:jet)
 p6 = heatmap((SC)/maximum(SC),c=:jet)
 if nWindows > 1
-    p5 = scatter(collect(1:1:nWindows),fit)
+    p5 = scatter(collect(1:1:nWindows),fit2)
     p = plot(p1,p2,p3,p4,p5,p6,layout=6)
 else
     p = plot(p1,p2,p3,p4,p6,layout=5)

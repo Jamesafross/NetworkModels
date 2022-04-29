@@ -22,7 +22,7 @@ using Parameters
     VsynIE::R = 1.5
     VsynEI::R = -0.5
     VsynII::R = -1.0
-    κ::R = 0.098
+    κ::R = 0.101
 end
 
 

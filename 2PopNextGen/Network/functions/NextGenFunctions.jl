@@ -1,5 +1,5 @@
 include("DEfunctions.jl")
-include("modelFunc.jl")
+include("NextGenRunFunc.jl")
 include("parameters.jl")
 include("stability.jl")
 include("functions.jl")
