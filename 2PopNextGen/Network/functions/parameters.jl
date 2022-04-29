@@ -57,3 +57,8 @@ mutable struct pSweepData
 	ηE
 	fit
 end
+
+mutable struct variousPars
+    tPrev::Float64
+    timeAdapt::Float64
+end

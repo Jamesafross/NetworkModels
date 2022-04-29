@@ -15,10 +15,10 @@ Tstim = [60,90]
 
 #load data and make struct & dist matrices
 c=7000.
-SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=2)
-
-SC = 0.1*SC
+SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=3)
+lags[lags .<= 0.005] .= 0
 SC = SC[1:size(SC,1) .!= 100,1:size(SC,1) .!= 100 ]
+W_sum = W_sum[1:size(W_sum,1) .!= 100]
 N = size(SC,1)
 PaulFCmean = PaulFCmean[1:size(PaulFCmean,1) .!= 100,1:size(PaulFCmean,1) .!= 100 ]
 PaulFCmean = PaulFCmean .- diagm(ones(N))
@@ -27,13 +27,13 @@ clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for
 W = zeros(N,N)
 W.=SC
 NGp = NextGen2PopParams()
-W = W+(1/NGp.κ)diagm(ones(N))
+
 bP = ballonModelParameters()
-nWindows = 20
-tWindows = 300
+nWindows = 1
+tWindows = 300.0
 
 stimOpts = "off"
-adapt = "on"
+adapt = "off"
 opts=modelOpts(stimOpts,adapt)
 
 println("Running model ... ")

@@ -27,21 +27,33 @@ function make_uhist(tgrid,u)
     return interp
 end
 
-function adapt_global_coupling(p,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64})
+function adapt_global_coupling(hparams,VsynEE,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64},minSC::Float64,W_sum::Vector{Float64},vP)
     @inbounds for ii = 1:N
+        currentHistii = h(hparams,t-1.0;idxs=ii+4N)*(VsynEE -h(hparams,t-1.0;idxs=ii+2N ) )
         @inbounds for jj = 1:N
-            if W[jj,ii] != 0.0
+            currentHistjj = u[jj+4N]*(VsynEE-u[jj+2N]) - h(hparams,t-1.0;idxs=jj+4N)*(VsynEE -h(hparams,t-1.0;idxs=jj+2N ))
+                   
+            if W[jj,ii]  > 0.0
                 if lags[jj,ii] == 0.0
-                     W[jj,ii] += 0.1*u[ii]*(u[jj] - h(p,t-1.0;idxs=jj))
+                    
+                     W[jj,ii] += 0.0000001*u[ii+4N]*(VsynEE - u[ii+2N])*(currentHistjj)
                 else
-                     W[jj,ii] += 0.1*h(p,t-lags[jj,ii];idxs=ii)*(u[jj] - h(p,t-1.0;idxs=jj))
+                     W[jj,ii] += 0.0000001*currentHistii*(currentHistjj)
+                end
+                if W[jj,ii] < minSC
+                    W[jj,ii] = minSC
+                elseif W[jj,ii] > 0.11
+                    W[jj,ii] = 0.11
                 end
             end
+        
+        end
+       
+        
+        if sum(W[:,ii]) != 0.0
+        @views W[:,ii] = W_sum[ii].*(W[:,ii]./sum(W[:,ii]))
         end
         W[W .< 0.0] .= 0.0
-        if sum(W[:,ii]) != 0.0
-        @views W[:,ii] = W[:,ii]./sum(W[:,ii])
-        end
 
     end
 
@@ -52,7 +64,14 @@ function adapt_global_coupling(p,N::Int64,W::Matrix{Float64},lags::Matrix{Float6
         end
     end
 
+    
+        vP.timeAdapt += 0.01
+        vP.tPrev = maximum([vP.tPrev,t])
+  
+
     return W
+
+
   
 end
 
@@ -115,4 +134,12 @@ function makeInitConds(NGp)
     u0[7N+1:8N] .= gII0
 
     u0 = u0 + perturb
+end
+
+function stim(t,i,stimNodes,Tstim,nRun,stimOpt)
+    if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && (stimOpt == "on" || stimOpt == "ON")
+        return 6.
+    else
+        return 0.
+    end
 end

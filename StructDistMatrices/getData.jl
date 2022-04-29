@@ -2,12 +2,12 @@ function getData(c;normalise=0,delayDigits=2)
     InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices/Averaged"
     #load data and make struct & dist matrices
 
-    SC = load("$InDATADIR/PaulStructmean_140.jld","PaulStructmean_140")
+    SC = 0.1*load("$InDATADIR/PaulStructmean_140.jld","PaulStructmean_140")
     dist = load("$InDATADIR/PaulDist.jld","dist")
     PaulFCmean = load("$InDATADIR/PaulFCmean_140.jld","paulFCmean_140")
     N = size(SC,1) # number of nodes
     lags = round.(dist./c,digits=delayDigits) # axonal delays
-    
+    SC[SC .<0.01] .=0.0
     if normalise == 1
         SC = normalise(SC,N)
         W_sum = ones(N)

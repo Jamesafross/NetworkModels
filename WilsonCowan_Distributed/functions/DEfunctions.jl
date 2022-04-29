@@ -4,16 +4,18 @@ function WC(du,u,h,p,t)
     @unpack cEE,cEI,cIE,cII,τE,τI,τx,Pext,θE,θI,β,η,σ = WCp
     @unpack W,lags,N = nP
     @unpack stimOpt,adapt=opts
+
+    if adapt == "on" || adapt == "ON"
+        if t ≈ adpTime
+            nP.W .= adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
+            adpTime += 0.01
+        end
+    end
   
     @inbounds for i = 1:N
         d = 0.0
         #if t > 15.0
-        if adapt == "on" || adapt == "ON"
-            if t ≈ adpTime
-                nP.W .= adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
-                adpTime += 0.01
-            end
-        end
+       
       
 
        
