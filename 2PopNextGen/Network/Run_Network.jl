@@ -15,8 +15,8 @@ Tstim = [60,90]
 
 #load data and make struct & dist matrices
 c=7000.
-SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=3)
-lags[lags .<= 0.005] .= 0
+SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=5)
+lags[lags .<= 0.004] .= 0
 SC = SC[1:size(SC,1) .!= 100,1:size(SC,1) .!= 100 ]
 W_sum = W_sum[1:size(W_sum,1) .!= 100]
 N = size(SC,1)

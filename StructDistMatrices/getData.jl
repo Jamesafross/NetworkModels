@@ -35,14 +35,17 @@ function getData_nonaveraged(c;normalise=0,delayDigits=2)
     dataNamesSC = readdir("$SCDataDir")
     numDataSC = size(dataNamesSC,1)
 
-    SC_Array = zeros(140,140,numDataSC)
-    FC_Array = zeros(140,140,numDataFC)
+    SC_Array = zeros(139,139,numDataSC)
+    FC_Array = zeros(139,139,numDataFC)
     for i = 1:numDataSC
-        SC_Array[:,:,i] = load("$SCDataDir/paulStruct_140_$i.jld", "paulStruct_140_$i")
+        SC = load("$SCDataDir/paulStruct_140_$i.jld", "paulStruct_140_$i")
+        SC_Array[:,:,i] = SC[1:size(SC,1) .!= 100,1:size(SC,1) .!= 100 ]
     end
 
     for i = 1:numDataFC
-        FC_Array[:,:,i] = load("$FCDataDir/paulFC_140_$i.jld", "paulFC_140_$i")
+        FC = load("$FCDataDir/paulFC_140_$i.jld", "paulFC_140_$i")
+    
+        FC_Array[:,:,i] =  FC[1:size(FC,1) .!= 100,1:size(FC,1) .!= 100 ]
     end
   
   
@@ -55,13 +58,14 @@ function getData_nonaveraged(c;normalise=0,delayDigits=2)
     W_sum_mat = zeros(N,numDataSC)
     for j = 1:numDataSC
         SC = SC_Array[:,:,j][:,:]
-        minSC[j] = minimum(SC[SC.>0.0])
+        minSC_vec[j] = minimum(SC[SC.>0.0])
         for i = 1:N
-            W_sum[i,j] = sum(SC[:,i])
+            W_sum_mat[i,j] = sum(SC[:,i])
         end 
     end
-
     
 
     return SC_Array,minSC_vec,W_sum_mat,lags,FC_Array,N
 end
+
+getData_nonaveraged(c;normalise=0,delayDigits=2)
