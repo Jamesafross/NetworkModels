@@ -1,5 +1,4 @@
 #includes 
-
 using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,StochasticDelayDiffEq,Random,NLsolve,Statistics,Parameters,Interpolations
 
 HOMEDIR = homedir()
@@ -30,12 +29,11 @@ W.=SC
 NGp = NextGen2PopParams()
 W = W+(1/NGp.κ)diagm(ones(N))
 bP = ballonModelParameters()
-nWindows = 1
+nWindows = 20
 tWindows = 300
 
 stimOpts = "off"
 adapt = "on"
-
 opts=modelOpts(stimOpts,adapt)
 
 println("Running model ... ")
