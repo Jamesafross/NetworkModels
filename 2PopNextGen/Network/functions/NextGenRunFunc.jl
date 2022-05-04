@@ -6,6 +6,9 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
     nP = networkParameters(W, lags, N)
    
     for j = 1:nWindows
+        if nWindows > 1
+            println("working on window  : ",j)
+        end
 
      
         if j == 1

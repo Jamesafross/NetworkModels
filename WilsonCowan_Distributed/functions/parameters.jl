@@ -11,7 +11,7 @@
     τE::R  = 0.01
     τI::R  =0.02
     τx::R = .01
-    Pext::R  =0.31
+    Pext::R  =0.315
 
 end
 
@@ -31,4 +31,10 @@ mutable struct dataStruct
 	fit
 	SC
 end
+
+mutable struct variousPars
+    tPrev::Float64
+    timeAdapt::Float64
+end
+
 	

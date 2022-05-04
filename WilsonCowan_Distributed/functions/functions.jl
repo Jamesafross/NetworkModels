@@ -12,7 +12,7 @@ function make_uhist(tgrid,u)
     return interp
 end
 
-function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64},minSC::Float64,W_sum::Vector{Float64})
+function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64},minSC::Float64,W_sum::Vector{Float64},vP)
     @inbounds for ii = 1:N
         @inbounds for jj = 1:N
             if W[jj,ii]  > 0.0
@@ -36,6 +36,11 @@ function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{
                  W[l,k] = W[k,l]
         end
     end
+
+
+    vP.timeAdapt += 0.01
+    vP.tPrev = maximum([vP.tPrev,t])
+
 
     return W
   

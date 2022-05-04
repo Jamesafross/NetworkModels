@@ -36,9 +36,9 @@ function adapt_global_coupling(hparams,VsynEE,N::Int64,W::Matrix{Float64},lags::
             if W[jj,ii]  > 0.0
                 if lags[jj,ii] == 0.0
                     
-                     W[jj,ii] += 0.0000001*u[ii+4N]*(VsynEE - u[ii+2N])*(currentHistjj)
+                     W[jj,ii] += 0.01*u[ii+4N]*(VsynEE - u[ii+2N])*(currentHistjj)
                 else
-                     W[jj,ii] += 0.0000001*currentHistii*(currentHistjj)
+                     W[jj,ii] += 0.01*currentHistii*(currentHistjj)
                 end
                 if W[jj,ii] < minSC
                     W[jj,ii] = minSC
@@ -121,7 +121,7 @@ function makeInitConds(NGp)
     VsynEE,VsynIE,VsynEI,VsynII,ΔE,ΔI,η_0E,η_0I,τE,τI
 
     rE0, rI0, vE0, vI0, gEE0, gEI0, gIE0, gII0 = init_conds_SS(params)
-    perturb = 0.1*rand(8*N)
+    perturb = 0.0*rand(8*N)
 
     u0 = zeros(8*N)
     u0[1:N] .= rE0
