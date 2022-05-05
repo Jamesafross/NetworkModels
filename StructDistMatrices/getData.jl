@@ -1,5 +1,5 @@
 function getData(c;normalise=0,delayDigits=2)
-    InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices/Averaged"
+    InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices/Paul/Averaged"
     #load data and make struct & dist matrices
 
     SC = 0.1*load("$InDATADIR/PaulStructmean_140.jld","PaulStructmean_140")
@@ -23,8 +23,8 @@ function getData(c;normalise=0,delayDigits=2)
 end
 
 
-function getData_nonaveraged(c;normalise=0,delayDigits=2)
-    InMeanDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices/Averaged"
+function getData_nonaveraged(;normalise=0,delayDigits=2,SCtype ="log")
+    InMeanDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices/Paul/Averaged"
     #load data and make struct & dist matrices
     FCDataDir = "$HOMEDIR/NetworkModels/StructDistMatrices/non-averaged/paulFunctional"
     SCDataDir = "$HOMEDIR/NetworkModels/StructDistMatrices/non-averaged/paulStructural"
@@ -38,7 +38,10 @@ function getData_nonaveraged(c;normalise=0,delayDigits=2)
     SC_Array = zeros(139,139,numDataSC)
     FC_Array = zeros(139,139,numDataFC)
     for i = 1:numDataSC
-        SC = 0.1load("$SCDataDir/paulStruct_140_$i.jld", "paulStruct_140_$i")
+        SC = load("$SCDataDir/paulStruct_140_$i.jld", "paulStruct_140_$i")
+        if SCtype == "log"
+            SC=0.01*log.(SC)
+        end
         SC_Array[:,:,i] = SC[1:size(SC,1) .!= 100,1:size(SC,1) .!= 100 ]
     end
 
@@ -50,9 +53,7 @@ function getData_nonaveraged(c;normalise=0,delayDigits=2)
   
   
     dist = load("$InMeanDATADIR/PaulDist.jld","dist")
-    N = size(SC_Array[:,:,1],1) # number of nodes
-    lags = round.(dist./c,digits=delayDigits) # axonal delays
-    
+   
 
     minSC_vec = zeros(numDataSC) 
     W_sum_mat = zeros(N,numDataSC)
@@ -65,8 +66,24 @@ function getData_nonaveraged(c;normalise=0,delayDigits=2)
     end
     
 
-    return SC_Array,minSC_vec,W_sum_mat,lags,FC_Array,N
+    return SC_Array,FC_Array,dist
 end
+
+function getMinSC_and_Wsum(SC)
+    N = size(SC,1)
+    minSC = minimum(SC)
+    W_sum = zeros(N)
+    for i = 1:N
+        W_sum[i] = sum(SC[:,i])
+    end
+
+    return minSC,W_sum
+end
+
+
+
+
+
 
 function getFC_nonaverages()
 

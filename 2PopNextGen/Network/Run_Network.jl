@@ -15,16 +15,13 @@ Tstim = [60,90]
 
 #load data and make struct & dist matrices
 c=7000.
-SC,minSC,W_sum,lags,PaulFCmean,N = getData(c;normalise=0,delayDigits=2)
-SC_Array,minSC_vec,W_sum_mat,lags,FC_Array,N = getData_nonaveraged(c;normalise=0,delayDigits=2)
-#lags[lags .<= 0.004] .= 0
-SC = SC[1:size(SC,1) .!= 100,1:size(SC,1) .!= 100 ]
-SC=SC_Array[:,:,1]
-W_sum = W_sum[1:size(W_sum,1) .!= 100]
-W_sum = W_sum_mat[:,1]
+SC_Array,FC_Array,dist = getData_nonaveraged()
+
+PaulMeanFC = mean(FC_Array,dims=3)[:,:]
+SC = SC_Array[:,:,1]
+lags = dist./c
+minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
-PaulFCmean = PaulFCmean[1:size(PaulFCmean,1) .!= 100,1:size(PaulFCmean,1) .!= 100 ]
-PaulFCmean = PaulFCmean .- diagm(ones(N))
 
 clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for solver
 W = zeros(N,N)
@@ -42,9 +39,9 @@ opts=modelOpts(stimOpts,adapt)
 println("Running model ... ")
 @time Rsave,Wsave = NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
 
-FC_Array = getFC_nonaverages()
+
 FC_Array_stim= getFCstim_nonaverages()
-PaulFCmean = mean(FC_Array,dims=3)[:,:]
+
 PaulFCmean_stim = mean(FC_Array_stim,dims=3)[:,:]
 
 fit = zeros(nWindows)

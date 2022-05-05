@@ -15,15 +15,17 @@ end
     include("$InDATADIR/getData.jl")
     
     #load data and make struct & dist matrices
-    SC,minSC,W_sum,dist,PaulFCmean,N = getData2(;normalise=0,delayDigits=2)
-    SC = SC[1:size(SC,1) .!= 100,1:size(SC,1) .!= 100 ]
-    W_sum = W_sum[1:size(W_sum,1) .!= 100]
+    c=7000.
+    SC_Array,FC_Array,dist = getData_nonaveraged()
+
+    PaulMeanFC = mean(FC_Array,dims=3)
+    SC = SC_Array[:,:,1]
+    lags = dist./c
+    minSC,W_sum=getMinSC_and_Wsum(SC)
+  
     N = size(SC,1)
-    PaulFCmean = PaulFCmean[1:size(PaulFCmean,1) .!= 100,1:size(PaulFCmean,1) .!= 100 ]
-    PaulFCmean = PaulFCmean .- diagm(ones(N))
     W = zeros(N,N)
     W.=SC
-
     bP = ballonModelParameters()
     stimNodes = [21,39]
     Tstim = [60,90]
@@ -36,9 +38,9 @@ tWindows = 300
 stimOpts = "off"
 adapt = "off"
 opts=modelOpts(stimOpts,adapt)
-@everywhere nTrials0 = 1
-@everywhere nTrials1 = 10
-@everywhere nTrials2 = 30
+@everywhere nTrials0 = 2
+@everywhere nTrials1 = 6
+@everywhere nTrials2 = 20
 cvec = [6000]
 
 κVec = LinRange(0.09,0.12,nTrials1)
@@ -94,6 +96,7 @@ for k = 1:nTrials0
         for j = 1:nTrials2
             fitMat[k,i,j] = pSweep[k,i,j].fit
         end
+       
     end
 end
 
