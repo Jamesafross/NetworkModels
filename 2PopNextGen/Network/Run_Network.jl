@@ -13,13 +13,18 @@ stimNodes = [21,39]
 Tstim = [60,90]
 
 
+
 #load data and make struct & dist matrices
 c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged()
 
-PaulMeanFC = mean(FC_Array,dims=3)[:,:]
-SC = SC_Array[:,:,1]
+FC_Array = FC_Array[:,:,:]
+
+PaulFCmean = mean(FC_Array,dims=3)
+SC = 0.01*SC_Array[:,:,1]
 lags = dist./c
+
+lags = round.(lags,digits=2)
 minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
 
@@ -56,14 +61,14 @@ FC_fit = zeros(size(FC_Array,3))
 for i = 1:nWindows
     for j = 1:size(FC_Array,3)
         
-        fitArray[i,j] = i + im*fitR(Rsave[:,:,i].^2,FC_Array[:,:,j].^2)
+        fitArray[i,j] = i + im*fitR(Rsave[:,:,i],FC_Array[:,:,j])
         if j <= size(FC_Array_stim,3)
         fitArray_stim[i,j] = i + im*fitR(Rsave[:,:,i].^2,FC_Array_stim[:,:,j].^2)
         end
     end
     fit[i] = fitR(Rsave[:,:,i],PaulFCmean)
-    fit2[i] = fitR((Rsave[:,:,i].^2),(PaulFCmean_stim.^2))
-    fit2_stim[i] = fitR((Rsave[:,:,i].^2),(PaulFCmean.^2))
+    fit2[i] = fitR((Rsave[:,:,i].^2),(PaulFCmean.^2))
+    fit2_stim[i] = fitR((Rsave[:,:,i].^2),(PaulFCmean_stim.^2))
     SCFCfit[i] = fitR(SC*1,Rsave[:,:,i])
 end
 
@@ -98,9 +103,12 @@ else
     p = plot(p1,p2,p3,p4,layout=4)
 end
 
-fitArray = reshape(fitArray,nWindows*28)
+fitArray = reshape(fitArray,nWindows*size(FC_Array,3))
 fitArray_stim = reshape(fitArray_stim,nWindows*25)
-
+fitRvec = zeros(size(FC_Array,3))
+for i = 1:size(FC_Array,3);
+    fitRvec[i] = fitR(Rsave[:,:,nWindows],FC_Array[:,:,i]);
+end
 p[:plot_title]  = "fit (r) = $meanfit,  (r² ) = $meanfit2 "
 plot(p)
 
@@ -113,8 +121,8 @@ plot(p)
 
 scatter(collect(1:1:nWindows),fit2,label="FC fit (mean)")
 scatterplot1 = scatter!(collect(1:1:nWindows),fit2_stim,label="FC stim fit (mean)")
-
+println("fit = ", fit2[:])
 scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
-scatter!(collect(1:1:nWindows),fit2,label="FC fit (mean)")
-
+scatter!(collect(1:1:nWindows),fit,label="FC (r²) fit (mean)")
+scatter!(collect(1:1:nWindows),fit2,label="FC (r) fit (mean)")
 scatterplot2 = scatter!(real(fitArray),imag(fitArray),label="FC fit (windows)")

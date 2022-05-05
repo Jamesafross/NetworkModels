@@ -1,4 +1,4 @@
-function getDataNimg(;normalise=0,delayDigits=2,logSC=1)
+function getDataNimg(;normalise=0,delayDigits=2,SCtype="log")
     HOMEDIR=homedir()
     InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices/Nimg_data"
 
@@ -54,6 +54,12 @@ function getDataNimg(;normalise=0,delayDigits=2,logSC=1)
         monkey = monkeys[i]
         SC_Array = load("$SCDataDir/SL_$monkey.jld", "SL_$monkey")
     end
+
+    if SCtype == "log"
+        SC_Array = log.(SC_Array)
+        SC_Array[SC_Array .< 0.0] .= 0.0
+    end
+
 
     #load data and make struct & dist matrices
 
