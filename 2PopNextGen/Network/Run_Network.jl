@@ -16,12 +16,16 @@ Tstim = [60,90]
 
 #load data and make struct & dist matrices
 c=7000.
-SC_Array,FC_Array,dist = getData_nonaveraged()
+SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="ROI_SIZE")
 
 FC_Array = FC_Array[:,:,[4,21,16,20,26,14,11]]
 
 PaulFCmean = mean(FC_Array,dims=3)
-SC = 0.01*SC_Array[:,:,1]
+SC = 100*SC_Array[:,:,1]
+SC = log.(SC)
+SC[SC.<0.0].=0.0
+SC=0.001*SC
+
 lags = dist./c
 
 lags = round.(lags,digits=2)
@@ -32,6 +36,7 @@ clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for
 W = zeros(N,N)
 W.=SC
 NGp = get(ParSets,"Pset_2",1)
+NGp = NextGen2PopParams2(η_0E = -14.4)
 
 bP = ballonModelParameters()
 nWindows = 1
@@ -126,3 +131,4 @@ scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
 scatter!(collect(1:1:nWindows),fit2,label="FC (r²) fit (mean)")
 scatter!(collect(1:1:nWindows),fit,label="FC (r) fit (mean)")
 scatterplot2 = scatter!(real(fitArray),imag(fitArray),label="FC fit (windows)")
+heatmap(Rsave[:,:,1])

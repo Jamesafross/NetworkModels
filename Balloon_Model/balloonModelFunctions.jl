@@ -11,7 +11,7 @@ end
 function bold_convolve(saveat,u0,T,p1,p2)
     tspan = (0.0,T)
     prob = ODEProblem(hemo_func_NL,u0,tspan,p1)
-    sol = solve(prob,saveat=saveat,progress=true)
+    sol = solve(prob,saveat=saveat)
     ts = LinRange(0,T,size(sol,2))
 
     if minimum(sol[3, :]) < 0.0001

@@ -45,6 +45,23 @@ function getData_nonaveraged(;normalise=0,delayDigits=2,SCtype="log")
     if SCtype == "log"
         SC_Array = log.(SC_Array)
         SC_Array[SC_Array .< 0.0] .= 0.0
+    elseif SCtype == "ROI_SIZE"
+        InROISIZE="$HOMEDIR/NetworkModels/StructDistMatrices/Paul/ROI_size"
+        dataNamesSIZE = readdir("$InROISIZE")
+        numDataSIZE = size(dataNamesSIZE,1)
+        N = size(SC_Array,1)
+    
+        for k = 1:size(SC_Array,3)
+            NAME = dataNamesSIZE[k]
+            ROI_SIZE = load("$InROISIZE/$NAME","Paul_ROI_size_$k")
+            for i = 1:N
+                for j = 1:N
+                    SC_Array[i,j,k] = SC_Array[i,j,k]*(ROI_SIZE[i]/ROI_SIZE[j])
+                end
+            end
+        end
+          
+                
     end
 
 
