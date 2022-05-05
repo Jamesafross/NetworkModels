@@ -18,7 +18,7 @@ Tstim = [60,90]
 c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged()
 
-FC_Array = FC_Array[:,:,:]
+FC_Array = FC_Array[:,:,[4,21,16,20,26,14,11]]
 
 PaulFCmean = mean(FC_Array,dims=3)
 SC = 0.01*SC_Array[:,:,1]
@@ -31,7 +31,7 @@ N = size(SC,1)
 clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for solver
 W = zeros(N,N)
 W.=SC
-NGp = NextGen2PopParams()
+NGp = get(ParSets,"Pset_2",1)
 
 bP = ballonModelParameters()
 nWindows = 1
@@ -121,8 +121,8 @@ plot(p)
 
 scatter(collect(1:1:nWindows),fit2,label="FC fit (mean)")
 scatterplot1 = scatter!(collect(1:1:nWindows),fit2_stim,label="FC stim fit (mean)")
-println("fit = ", fit2[:])
+println("fit = ", fit[:])
 scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
-scatter!(collect(1:1:nWindows),fit,label="FC (r²) fit (mean)")
-scatter!(collect(1:1:nWindows),fit2,label="FC (r) fit (mean)")
+scatter!(collect(1:1:nWindows),fit2,label="FC (r²) fit (mean)")
+scatter!(collect(1:1:nWindows),fit,label="FC (r) fit (mean)")
 scatterplot2 = scatter!(real(fitArray),imag(fitArray),label="FC fit (windows)")
