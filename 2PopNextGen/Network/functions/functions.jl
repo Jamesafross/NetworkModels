@@ -64,15 +64,73 @@ function adapt_global_coupling(hparams,VsynEE,N::Int64,W::Matrix{Float64},lags::
         end
     end
 
-    
-        vP.timeAdapt += 0.01
-        vP.tPrev = maximum([vP.tPrev,t])
+    return W
+
+end
+
+function rij(cij,bsdp)
+    return (cij + 1.0)^bsdp
+end
+
+function hill(x,hsdp,bsdp)
+    return x/(x+hsdp^bsdp) - 1/2
+end
+
+
+function modHeaviside(x)
+    if x < 0.0
+        return 1.0
+    else
+        return -1.0
+    end
+end
+
+function ΔWsdp(cij,hsdp,bsdp)
+    return 0.0000005*hill(rij(cij,bsdp),hsdp,bsdp)
+end
+
+function ΔWgtp(w,dist,cij,agdp,ηgdp)
+    return agdp*modHeaviside(w - exp(cij*dist))*ηgdp
+end
+
+
+
+function adapt_global_coupling_cor(N::Int64,W::Matrix{Float64},dist::Matrix{Float64},minSC::Float64,W_sum::Vector{Float64},HIST::Array{Float64},hsdp,bsdp,agdp)
   
+    @inbounds for ii = 1:N
+        
+        @inbounds for jj = 1:N
+           
+            if W[jj,ii]  > 0.0
+                cij = cor(HIST[ii,:],HIST[jj,:])
+                W[jj,ii] += ΔWsdp(cij,hsdp,bsdp)
+                #W[jj,ii] += ΔWgtp(W[jj,ii],dist[ii,jj],cij,agdp,-1.0 + 2*rand())
+                if W[jj,ii] < minSC
+                    W[jj,ii] = minSC
+                elseif W[jj,ii] > 0.12
+                    W[jj,ii] = 0.12
+                end
+            end
+        
+        end
+       
+        
+        if sum(W[:,ii]) != 0.0
+        @views W[:,ii] = W_sum[ii].*(W[:,ii]./sum(W[:,ii]))
+        end
+        W[W .< 0.0] .= 0.0
+
+    end
+
+     @inbounds for k=1:N #Maintaining symmetry in the weights between regions
+        @inbounds for l = k:N
+                 W[k,l] = (W[k,l]+W[l,k])/2
+                 W[l,k] = W[k,l]
+        end
+    end
 
     return W
 
-
-  
 end
 
 function h1(hparams,t;idxs = nothing)
@@ -143,3 +201,30 @@ function stim(t,i,stimNodes,Tstim,nRun,stimOpt)
         return 0.
     end
 end
+
+function findBestFit(R,FC_Array)
+    fitRvec = zeros(size(FC_Array,3))
+    for i = 1:size(FC_Array,3);
+        fitRvec[i] = fitR(R,FC_Array[:,:,i]);
+    end
+
+    bestElementsTest = findfirst(x->x==sort(fitRvec, rev=true)[1],fitRvec)
+    bestElements = findfirst(x->x==sort(fitRvec, rev=true)[1],fitRvec)
+
+    sort(fitRvec, rev=true)
+    for i = 1:size(FC_Array,3)
+        currentFit = fitR(R,mean(FC_Array[:,:,bestElements],dims=3)[:,:,1])
+        best = findfirst(x->x==sort(fitRvec, rev=true)[i],fitRvec)
+
+        if fitR(R,mean(FC_Array[:,:,cat(bestElements,best,dims=1)],dims=3)[:,:,1]) > currentFit
+            bestElements = cat(bestElements,findfirst(x->x==sort(fitRvec, rev=true)[i],fitRvec),dims=1)
+        end
+    end
+
+    fit = fitR(R,mean(FC_Array[:,:,bestElements],dims=3)[:,:,1])
+    return fit,bestElements
+    
+end
+        
+        
+

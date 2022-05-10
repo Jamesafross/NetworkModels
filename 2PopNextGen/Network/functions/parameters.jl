@@ -66,6 +66,7 @@ end
 
 mutable struct networkParameters
     W::Matrix{Float64}
+    dist::Matrix{Float64}
     lags::Matrix{Float64}
     N::Int64
 end
@@ -92,4 +93,9 @@ end
 mutable struct variousPars
     tPrev::Float64
     timeAdapt::Float64
+end
+
+mutable struct adaptParams
+    tP::Float64
+    HIST::Array{Float64}
 end

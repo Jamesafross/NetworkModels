@@ -1,9 +1,9 @@
-function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
   
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)
-    nP = networkParameters(W, lags, N)
+    nP = networkParameters(W, dist,lags, N)
    
     for j = 1:nWindows
         if nWindows > 1
@@ -15,6 +15,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
             u0 = zeros(8N)
             u0[:] = makeInitConds(NGp)
             vP = variousPars(0.0, 100.0)
+            global aP = adaptParams(95.0,u0[1:N])
             
             hparams = u0
         else
@@ -25,6 +26,8 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
             hparams = u_hist
           
             vP = variousPars(0.0, 0.01)
+            aP.tP = 0.01
+            println(size(aP.HIST))
             
         end
         
@@ -33,7 +36,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
         #println(adpTime)
        
 
-        p = NGp,nP,vP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts
+        p = NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts
         if j == 1
             prob = DDEProblem(NextGen,u0, h1, tspan, p)
         else

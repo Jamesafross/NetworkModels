@@ -3,22 +3,37 @@
 # solver                        #
 #################################
 function NextGen(du,u,h,p,t)
-    NGp,nP,vP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts = p
+    NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts = p
     
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
     κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
     @unpack tPrev,timeAdapt = vP
     @unpack stimOpt,adapt = opts
-    @unpack W,lags,N = nP
+    @unpack W,dist,lags,N = nP
+    @unpack tP,HIST = aP 
+    
  
    
-    if ((t==round(timeAdapt,digits=3)  && (t != tPrev)) || (t - tPrev > 0.01)) && (adapt == "on") && t >= 100.0
-
-            nP.W .= adapt_global_coupling(hparams,VsynEE,N,W,lags,h,t,u,minSC,W_sum,vP)
-            #vP.timeAdapt += 0.01
-            #println("t = ", t, "adpTime = ",vP.timeAdapt)
+    if ((t==round(timeAdapt,digits=3)  && (t != tPrev)) || (t - tPrev > 0.01)) && (adapt == "on") && t >= timeAdapt
             
+            #println(cor(aP.HIST[1,:],aP.HIST[100,:]))
+             nP.W = adapt_global_coupling_cor(N,W,dist,minSC,W_sum,HIST,1.,2.,0.00001)
+            vP.timeAdapt += 0.01
+            vP.tPrev = maximum([vP.tPrev,t])
+            #println(t)
     end
+     
+    if  t >= tP
+            
+        aP.HIST = hcat(aP.HIST,u[1:N])
+        if size(aP.HIST,2) > 200
+            aP.HIST = aP.HIST[:, 1:end .!= 1]
+        end
+        aP.tP += 0.01
+        
+       
+    end
+
 
  
       @inbounds for i = 1:N

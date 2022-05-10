@@ -1,6 +1,6 @@
-par etaE=-16,DeltaE=0.5, DeltaI=0.5,etaI=-10,tauE=0.05,tauI=0.06
+par kappaSII=0.0,etaE=-15,DeltaE=0.5, DeltaI=0.5,etaI=-10,tauE=0.05,tauI=0.06
 par alphaEE=10.2,alphaIE=10.5,alphaEI=3.6,alphaII=2.7
-par kappaSEE=5.0,kappaSIE=3.3,kappaSEI=3.6,kappaSII=2.7
+par kappaSEE=5.0,kappaSIE=3.3,kappaSEI=3.6
 par kappaVEE=0,kappaVIE=0,kappaVEI=0,kappaVII=0
 par VsynEE=4.0,VsynIE=1.5,VsynEI=-0.5,VsynII=-1
 
@@ -8,8 +8,8 @@ init rE=2.28,rI=0.12,vE=5.2,vI=-7.1,gEE=11.4,gIE=7.5,gEI=0.4,gII=0.3
 
 rE' = (1/tauE)*(-(gEE + gEI)*rE -(kappaVEE+ kappaVEI)*rE + 2*rE*vE + DeltaE/(tauE*pi)) 
 rI' = (1/tauI)*(-(gII + gIE)*rI -(kappaVIE+ kappaVII)*rI + 2*rI*vI + DeltaI/(tauI*pi))
-vE' = (1/tauE)*(gEE*(VsynEE-vE) + gEI*(VsynEI-vI) +kappaVEI*(vI-vE) - (tauE*pi*rE)^2 +vE^2 +etaE)
-vI' = (1/tauE)*(gEE*(VsynIE-vE) + gEI*(VsynII-vI) +kappaVIE*(vE-vI) - (tauI*pi*rI)^2 +vI^2 +etaI)
+vE' = (1/tauE)*(gEE*(VsynEE-vE) + gEI*(VsynEI-vI) +kappaVEI*(vI-vE) - (tauE*pi*rE)^2 +vE^2 + etaE)
+vI' = (1/tauI)*(gEE*(VsynIE-vE) + gEI*(VsynII-vI) +kappaVIE*(vE-vI) - (tauI*pi*rI)^2 +vI^2 + etaI)
 gEE' = alphaEE*(-gEE + kappaSEE*rE)
 gIE' = alphaEE*(-gIE + kappaSIE*rE)
 gEI' = alphaEE*(-gEI + kappaSEI*rI)

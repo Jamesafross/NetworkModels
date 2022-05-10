@@ -97,7 +97,7 @@ function getFCstim_nonaverages()
     end
 
     return FC_Array
-
+    minSC,W_sum=getMinSC_and_Wsum(SC)
 end
 
 function getMinSC_and_Wsum(SC)
