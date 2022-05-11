@@ -26,7 +26,7 @@ function NextGen(du,u,h,p,t)
     if  t >= tP
             
         aP.HIST = hcat(aP.HIST,u[1:N])
-        if size(aP.HIST,2) > 200
+        if size(aP.HIST,2) > 100
             aP.HIST = aP.HIST[:, 1:end .!= 1]
         end
         aP.tP += 0.01

@@ -99,8 +99,7 @@ function adapt_global_coupling_cor(N::Int64,W::Matrix{Float64},dist::Matrix{Floa
   
     @inbounds for ii = 1:N
         
-        @inbounds for jj = 1:N
-           
+        @inbounds for jj = 1:N 
             if W[jj,ii]  > 0.0
                 cij = cor(HIST[ii,:],HIST[jj,:])
                 W[jj,ii] += ΔWsdp(cij,hsdp,bsdp)
@@ -114,7 +113,6 @@ function adapt_global_coupling_cor(N::Int64,W::Matrix{Float64},dist::Matrix{Floa
         
         end
        
-        
         if sum(W[:,ii]) != 0.0
         @views W[:,ii] = W_sum[ii].*(W[:,ii]./sum(W[:,ii]))
         end

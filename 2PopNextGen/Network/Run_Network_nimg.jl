@@ -7,6 +7,7 @@ InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
 include("./functions/NextGenFunctions.jl")
 include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
+include("$InDATADIR/getDataNimg.jl")
 
 
 stimNodes = [21,39]
@@ -16,13 +17,14 @@ Tstim = [60,90]
 
 #load data and make struct & dist matrices
 c=7000.
-SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
+SC_Array,FC_Array_AL,FC_Array_DP,FC_Array_FL,FC_Array_VL,Dist_Array= getDataNimg(;normalise=0,delayDigits=2,SCtype="log")
 
-FC_Array = FC_Array
+dist = Dist_Array[:,:,1]
+FC_Array = FC_Array_AL
 
 PaulFCmean = mean(FC_Array,dims=3)
 
-SC = 0.01*SC_Array[:,:,1]
+SC = 0.01*(SC_Array[:,:,1] .- diagm(diag(SC_Array[:,:,1])))
 
 
 lags = dist./c
@@ -40,7 +42,7 @@ NGp = get(ParSets,"Pset_2",1)
 #NGp = NextGen2PopParams2(η_0E = -13.8)
 
 bP = ballonModelParameters()
-nWindows = 10
+nWindows = 20
 tWindows = 300.0
 
 stimOpts = "off"
@@ -51,45 +53,35 @@ println("Running model ... ")
 @time Rsave,Wsave = NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
 
 
-FC_Array_stim= getFCstim_nonaverages()
 
-PaulFCmean_stim = mean(FC_Array_stim,dims=3)[:,:]
+
 
 fit = zeros(nWindows)
 fit2 = zeros(nWindows)
 
-fit_stim = zeros(nWindows)
-fit2_stim=zeros(nWindows)
+
 
 fitt,bestIdxs = findBestFit(Rsave[:,:,1],FC_Array)
 
 fitt,bestIdxs2 = findBestFit(Rsave[:,:,1].^2,FC_Array.^2)
-
-fitt,bestIdxs_stim = findBestFit(Rsave[:,:,1],FC_Array_stim)
-
-fitt,bestIdxs2_stim = findBestFit(Rsave[:,:,1].^2,FC_Array_stim.^2)
 
 
 for i = 1:nWindows
 
     fit[i] = fitR(Rsave[:,:,i],mean(FC_Array[:,:,bestIdxs],dims=3))
     fit2[i] = fitR(Rsave[:,:,i].^2,mean(FC_Array[:,:,bestIdxs2].^2,dims=3))
-    fit_stim[i] = fitR(Rsave[:,:,i],mean(FC_Array_stim[:,:,bestIdxs_stim],dims=3))
-    fit2_stim[i] = fitR(Rsave[:,:,i].^2,mean(FC_Array_stim[:,:,bestIdxs2_stim].^2,dims=3))
+   
 end
 
 scatter(collect(1:1:nWindows),fit,label="FC fit ")
 
 scatter!(collect(1:1:nWindows),fit2,label="FC fit2 ")
 
-scatter!(collect(1:1:nWindows),fit_stim,label="FC stim fit ")
-scatter!(collect(1:1:nWindows),fit2_stim,label="FC stim fit2 ")
 
 plot!(collect(1:1:nWindows),fit,label="FC fit ")
-plot!(collect(1:1:nWindows),fit2,label="FC fit2 ")
-plot!(collect(1:1:nWindows),fit_stim,label="FC stim fit ")
 
-scatterplot1 =  plot!(collect(1:1:nWindows),fit2_stim,label="FC stim fit2 ")
+
+scatterplot1 = plot!(collect(1:1:nWindows),fit2,label="FC fit2 ")
 #println("fit = ", fit[:])
 #scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
 #scatter!(collect(1:1:nWindows),fit2,label="FC (r²) fit (mean)")
