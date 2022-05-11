@@ -72,7 +72,7 @@ function rij(cij,bsdp)
     return (cij + 1.0)^bsdp
 end
 
-function hill(x,hsdp,bsdp)
+function hill(x::Float64,hsdp::Float64,bsdp::Float64)
     return x/(x+hsdp^bsdp) - 1/2
 end
 
@@ -85,7 +85,7 @@ function modHeaviside(x)
     end
 end
 
-function ΔWsdp(cij,hsdp,bsdp)
+function ΔWsdp(cij::Float64,hsdp::Float64,bsdp::Float64)
     return 0.0000005*hill(rij(cij,bsdp),hsdp,bsdp)
 end
 
@@ -95,7 +95,7 @@ end
 
 
 
-function adapt_global_coupling_cor(N::Int64,W::Matrix{Float64},dist::Matrix{Float64},minSC::Float64,W_sum::Vector{Float64},HIST::Array{Float64},hsdp,bsdp,agdp)
+function adapt_global_coupling_cor(N::Int64,W::Matrix{Float64},dist::Matrix{Float64},minSC::Float64,W_sum::Vector{Float64},HIST::Array{Float64},hsdp,bsdp)
   
     @inbounds for ii = 1:N
         
@@ -103,7 +103,6 @@ function adapt_global_coupling_cor(N::Int64,W::Matrix{Float64},dist::Matrix{Floa
             if W[jj,ii]  > 0.0
                 cij = cor(HIST[ii,:],HIST[jj,:])
                 W[jj,ii] += ΔWsdp(cij,hsdp,bsdp)
-                #W[jj,ii] += ΔWgtp(W[jj,ii],dist[ii,jj],cij,agdp,-1.0 + 2*rand())
                 if W[jj,ii] < minSC
                     W[jj,ii] = minSC
                 elseif W[jj,ii] > 0.12

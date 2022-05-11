@@ -33,14 +33,14 @@ lags[lags.<0.003] .= 0.000
 minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
 
-clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for solver
+ # lags cant be zero for solver
 W = zeros(N,N)
 W.=SC
 NGp = get(ParSets,"Pset_2",1)
-NGp = NextGen2PopParams2(η_0E = -14.27)
+NGp = NextGen2PopParams2(η_0E = -14.1)
 
 bP = ballonModelParameters()
-nWindows = 5
+nWindows = 1
 tWindows = 300.0
 
 stimOpts = "off"
@@ -90,7 +90,7 @@ fitAll = [[fit],[fit2],[fit_stim],[fit2_stim]]
 dataSave = dataStruct(Rsave,fitAll,Wsave)
 
 if stimOpts == "on"
-    save1 = "tim"
+    save1 = "stim"
 else
     save1="NOstim"
 end

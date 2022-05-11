@@ -4,7 +4,8 @@
 #################################
 function NextGen(du,u,h,p,t)
     NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts = p
-    
+
+
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
     κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
     @unpack tPrev,timeAdapt = vP
@@ -17,7 +18,7 @@ function NextGen(du,u,h,p,t)
     if ((t==round(timeAdapt,digits=3)  && (t != tPrev)) || (t - tPrev > 0.01)) && (adapt == "on") && t >= timeAdapt
             
             #println(cor(aP.HIST[1,:],aP.HIST[100,:]))
-             nP.W = adapt_global_coupling_cor(N,W,dist,minSC,W_sum,HIST,1.,2.,0.00001)
+            nP.W = adapt_global_coupling_cor(N,W,dist,minSC,W_sum,HIST,1.,2.,0.00001)
             vP.timeAdapt += 0.01
             vP.tPrev = maximum([vP.tPrev,t])
             #println(t)

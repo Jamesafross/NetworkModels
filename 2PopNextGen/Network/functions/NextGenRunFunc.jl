@@ -1,5 +1,5 @@
 function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
-  
+    
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)
@@ -16,7 +16,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
             u0[:] = makeInitConds(NGp)
             vP = variousPars(0.0, 100.0)
             global aP = adaptParams(95.0,u0[1:N])
-            
+      
             hparams = u0
         else
             opts.stimOpt = "off"
@@ -34,17 +34,18 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
         tspan = (0.0,tWindows)
         adpStops = collect(0.01:0.01:tWindows)
         #println(adpTime)
-       
-
-        p = NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts
+        clags = unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0])))
+        println(clags)
+    
+        p = (NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts)
         if j == 1
-            prob = DDEProblem(NextGen,u0, h1, tspan, p)
+            prob = DDEProblem(NextGen,u0, h1, tspan, p ; constant_lags = clags)
+            sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
         else
-            prob = DDEProblem(NextGen,u0, h2, tspan, p)
+            prob = DDEProblem(NextGen,u0, h2, tspan, p ; constant_lags = clags)
+            sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
         end
         
-     
-        global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01,reltol=1e-2,abstol=1e-5)
 
 
         gEE = sol[4N+1:5N,:]
