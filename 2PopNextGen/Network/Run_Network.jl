@@ -15,7 +15,7 @@ Tstim = [60,90]
 
 
 #load data and make struct & dist matrices
-c=7000.
+c=13500.
 SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
 
 FC_Array = FC_Array
@@ -27,9 +27,9 @@ SC = 0.01*SC_Array[:,:,1]
 
 lags = dist./c
 
-lags = round.(lags,digits=2)
-#lags[lags.>0.005] .= 0.005
-#lags[0.0.<lags.<0.0040] .=0
+lags = round.(lags,digits=3) 
+lags[lags.<0.003] .= 0.000
+#lags[SC .< 0.018] .= 0  
 minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
 
@@ -37,10 +37,10 @@ clags = reshape(lags[lags.>0.0],length(lags[lags.>0.0])) # lags cant be zero for
 W = zeros(N,N)
 W.=SC
 NGp = get(ParSets,"Pset_2",1)
-#NGp = NextGen2PopParams2(η_0E = -13.8)
+NGp = NextGen2PopParams2(η_0E = -14.27)
 
 bP = ballonModelParameters()
-nWindows = 10
+nWindows = 5
 tWindows = 300.0
 
 stimOpts = "off"
@@ -78,6 +78,33 @@ for i = 1:nWindows
     fit2_stim[i] = fitR(Rsave[:,:,i].^2,mean(FC_Array_stim[:,:,bestIdxs2_stim].^2,dims=3))
 end
 
+
+#println("fit = ", fit[:])
+#scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
+#scatter!(collect(1:1:nWindows),fit2,label="FC (r²) fit (mean)")
+#scatter!(collect(1:1:nWindows),fit,label="FC (r) fit (mean)")
+#scatterplot2 = scatter!(real(fitArray),imag(fitArray),label="FC fit (windows)")
+#heatmap(Rsave[:,:,1])
+
+fitAll = [[fit],[fit2],[fit_stim],[fit2_stim]]
+dataSave = dataStruct(Rsave,fitAll,Wsave)
+
+if stimOpts == "on"
+    save1 = "tim"
+else
+    save1="NOstim"
+end
+if adapt == "on"
+    save2 = "Adaptivity"
+else
+    save2="NOadaptivity"
+end
+
+savename = save1*save2
+
+
+save("$HOMEDIR/NetworkModels/2PopNextGen/data/dataSave_$savename.jld","dataSave_$savename",dataSave)
+
 scatter(collect(1:1:nWindows),fit,label="FC fit ")
 
 scatter!(collect(1:1:nWindows),fit2,label="FC fit2 ")
@@ -90,9 +117,3 @@ plot!(collect(1:1:nWindows),fit2,label="FC fit2 ")
 plot!(collect(1:1:nWindows),fit_stim,label="FC stim fit ")
 
 scatterplot1 =  plot!(collect(1:1:nWindows),fit2_stim,label="FC stim fit2 ")
-#println("fit = ", fit[:])
-#scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
-#scatter!(collect(1:1:nWindows),fit2,label="FC (r²) fit (mean)")
-#scatter!(collect(1:1:nWindows),fit,label="FC (r) fit (mean)")
-#scatterplot2 = scatter!(real(fitArray),imag(fitArray),label="FC fit (windows)")
-#heatmap(Rsave[:,:,1])

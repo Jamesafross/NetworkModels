@@ -23,8 +23,10 @@ function NextGen(du,u,h,p,t)
             #println(t)
     end
      
-    if  t >= tP
-            
+
+    
+    if  t >= tP && adapt == "on"
+        #println(t)
         aP.HIST = hcat(aP.HIST,u[1:N])
         if size(aP.HIST,2) > 100
             aP.HIST = aP.HIST[:, 1:end .!= 1]

@@ -44,7 +44,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
         end
         
      
-        global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
+        global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01,reltol=1e-2,abstol=1e-5)
 
 
         gEE = sol[4N+1:5N,:]
