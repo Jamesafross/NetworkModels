@@ -3,6 +3,10 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)
+    BOLD_saveat = collect(0:1.6:tWindows)
+    size_out = length(BOLD_saveat)
+    BOLD_out = zeros(N,size_out,nWindows)
+   
     nP = networkParameters(W, dist,lags, N)
    
     for j = 1:nWindows
@@ -60,9 +64,13 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
         BalloonIn= make_In(sol.t,gEE)
         tspanB = (sol.t[1],sol.t[end])
         balloonParams = bP,BalloonIn
-        b0 =  cat(zeros(N),ones(3N),dims=1)
+        if j == 1
+            b0 =  cat(zeros(N),ones(3N),dims=1)
+        else
+            b0 = endBM
+        end
        
-        @time out,v_save = runBalloon(b0,balloonParams,tspanB,collect(sol.t[1]+15:2:sol.t[end]))
+         global out,endBM = runBalloon(b0,balloonParams,tspanB,BOLD_saveat)
         
         out_trans=(out')    
 
@@ -74,10 +82,11 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
         end
 
         Wsave[:,:,j] = nP.W
+        BOLD_out[:,:,j] = out
 
     end
 
-    return R,Wsave
+    return R,Wsave,BOLD_out
 
 
 end

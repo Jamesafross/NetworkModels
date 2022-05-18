@@ -20,17 +20,7 @@ function NextGen(du,u,h,p,t)
    
 
     
-    if  t >= tP && adapt == "on"
-        #println(t)
-      #  aP.HIST = hcat(aP.HIST,u[1:N])
-       # if size(aP.HIST,2) > 100
-        #    aP.HIST = aP.HIST[:, 1:end .!= 1]
-        #end
-        κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000005)
-        aP.tP += 0.01  
-        aP.tP = round(aP.tP,digits=2)
-        vP.count += 1
-    end
+   
 
 
  
@@ -56,6 +46,20 @@ function NextGen(du,u,h,p,t)
           gIE=u[i+5N]
           gEI=u[i+6N]
           gII=u[i+7N]
+
+          if  t >= tP && adapt == "on"
+            #println(t)
+          #  aP.HIST = hcat(aP.HIST,u[1:N])
+           # if size(aP.HIST,2) > 100
+            #    aP.HIST = aP.HIST[:, 1:end .!= 1]
+            #end
+            κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000005)
+            if i == N
+                aP.tP += 0.01  
+                aP.tP = round(aP.tP,digits=2)
+                vP.count += 1
+            end
+        end
           
 
 

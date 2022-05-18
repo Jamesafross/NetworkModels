@@ -47,14 +47,14 @@ NGp = get(ParSets,"Pset_2",1)
 κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
 
 bP = ballonModelParameters()
-nWindows = 1
+nWindows = 10
 tWindows = 300.0
 stimOpts = "off"
-adapt = "off"
+adapt = "on"
 opts=modelOpts(stimOpts,adapt)
 
 println("Running model ... ")
-@time Rsave,Wsave = NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
+@time Rsave,Wsave,out = NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
 
 
 FC_Array_stim= getFCstim_nonaverages()

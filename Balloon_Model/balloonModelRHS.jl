@@ -25,6 +25,6 @@ function runBalloon(u0,balloonParams,tspan,saveat)
     v_save[v_save .< 0] .= 0.0
     out = 100*DeltS_NL.(v_save,solBM[3N+1:4N,:],bP.V_0,bP.k_1,bP.k_2,bP.k_3)
 
-    return out,v_save
+    return out,solBM[:,end]
 end
 
