@@ -36,7 +36,7 @@ N = size(SC,1)
 W = zeros(N,N)
 W.=SC
 NGp = get(ParSets,"Pset_2",1)
-#NGp = NextGen2PopParams(η_0E = 1.,κ=0.0)
+NGp = NextGen2PopParams2(η_0E = -14.181,κ=0.50)
 
 κSEEv = ones(N)*NGp.κSEE
 κSIEv = ones(N)*NGp.κSIE
@@ -47,10 +47,10 @@ NGp = get(ParSets,"Pset_2",1)
 κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
 
 bP = ballonModelParameters()
-nWindows = 10
+nWindows = 1
 tWindows = 300.0
 stimOpts = "off"
-adapt = "on"
+adapt = "off"
 opts=modelOpts(stimOpts,adapt)
 
 println("Running model ... ")

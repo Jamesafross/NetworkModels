@@ -3,7 +3,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)
-    BOLD_saveat = collect(0:1.6:tWindows)
+    BOLD_saveat = collect(15:1.6:tWindows)
     size_out = length(BOLD_saveat)
     BOLD_out = zeros(N,size_out,nWindows)
    
@@ -57,11 +57,20 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
             prob = DDEProblem(NextGen,u0, h2, tspan, p)
             global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
         end
-        
-
-
+        vE = sol[2N+1:3N,:]
+        vI = sol[3N+1:4N,:]
         gEE = sol[4N+1:5N,:]
-        BalloonIn= make_In(sol.t,gEE)
+        gIE = sol[5N+1:6N,:]
+        gEI = sol[6N+1:7N,:]
+        gII = sol[7N+1:8N,:]
+
+       
+        currentE =  (gEE.*(NGp.VsynEE .- vE) .+ gEI.*(NGp.VsynEI .- vE));
+        currentI =  (gIE.*(NGp.VsynIE .- vI) .+ gII.*(NGp.VsynII .- vI));
+        Current = currentE .+ currentI
+
+    
+        BalloonIn= make_In(sol.t,Current)
         tspanB = (sol.t[1],sol.t[end])
         balloonParams = bP,BalloonIn
         if j == 1

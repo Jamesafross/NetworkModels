@@ -102,58 +102,71 @@ function NextGen(du,u,h,p,t)
   
   end
 
-
-  function NextGen_test_(du,u,h,p,t)
+  function NextGen2ndOrderSynapses(du,u,h,p,t)
     NGp,nP,hparams= p
-
-
     ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
     κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
  
     W,lags,N = nP
   
  
-      @inbounds for i = 1:N
-          d = 0.0
+    @inbounds for i = 1:N
+        d = 0.0
 
-          @inbounds for j = 1:N
-              if W[i,j] != 0.
-                  if lags[i,j] == 0.
-                     d  += W[i,j]*u[j]   
-                  else
-                      d += W[i,j]*h(hparams,t-lags[i,j]; idxs=j)
-                  end
-              end
-  
-          end
-  
-          rE=u[i]
-          rI=u[i+N]
-          vE=u[i+2N]
-          vI=u[i+3N]
-          gEE=u[i+4N]
-          gIE=u[i+5N]
-          gEI=u[i+6N]
-          gII=u[i+7N]
-         
-          #rE
-          du[i] =(1. /τE)*(-rE*(gEE + gEI + κVEE +  κVEI - 2 * vE) + (ΔE / (τE*pi)))
-          #rI
-          du[i+N] =(1. /τI)*(-rI*(gIE + gII + κVIE + κVII - 2 * vI) + (ΔI / (τI*pi)))
-          #vE
-          du[i+2N] =(1. /τE)*(gEE*(VsynEE - vE) + gEI*(VsynEI - vI) + κVEI*(vI - vE) - (τE^2)*(pi^2) * (rE^2.) +  vE^2. + η_0E)
-          #vI
-          du[i+3N] =(1. /τI)*(gIE*(VsynIE - vE) + gII*(VsynII - vI) + κVIE*(vE - vI) - (τI^2)*(pi^2)* (rI^2.) + vI^2. + η_0I)
-          #gEE
-          du[i+4N] = αEE * (-gEE + κSEE * κ*d + κSEE*rE)
-          #gIE
-          du[i+5N] = αIE * (-gIE + κSIE * rE)
-          #gEI
-          du[i+6N] = αEI * (-gEI + κSEI * rI)
-          #gII
-          du[i+7N] = αII * (-gII + κSII * rI)
-  
-  
+        @inbounds for j = 1:N
+            if W[i,j] != 0.
+                if lags[i,j] == 0.
+                    d  += W[i,j]*u[j]   
+                else
+                    d += W[i,j]*h(hparams,t-lags[i,j]; idxs=j)
+                end
+            end
+
+        end
+
+        rE=u[i]
+        rI=u[i+N]
+        vE=u[i+2N]
+        vI=u[i+3N]
+        gEE=u[i+4N]
+        gIE=u[i+5N]
+        gEI=u[i+6N]
+        gII=u[i+7N]
+        gext=u[i+8N]
+        pEE=u[i+9N]
+        pIE=u[i+10N]
+        pEI=u[i+11N]
+        pII=u[i+12N]
+        pext=u[i+13N]
+        
+        #rE
+        du[i] =(1. /τE)*(-rE*(gEE + gEI + gext + κVEE +  κVEI - 2 * vE) + (ΔE / (τE*pi)))
+        #rI
+        du[i+N] =(1. /τI)*(-rI*(gIE + gII + κVIE + κVII - 2 * vI) + (ΔI / (τI*pi)))
+        #vE
+        du[i+2N] =(1. /τE)*(gEE*(VsynEE - vE) + gext*(VsynEXT - vE) +  gEI*(VsynEI - vI) + κVEI*(vI - vE) - (τE^2)*(pi^2) * (rE^2.) +  vE^2. + η_0E)
+        #vI
+        du[i+3N] =(1. /τI)*(gIE*(VsynIE - vE) + gII*(VsynII - vI) + κVIE*(vE - vI) - (τI^2)*(pi^2)* (rI^2.) + vI^2. + η_0I)
+        #gEE
+        du[i+4N] = αEE * (-gEE + pEE)
+        #gIE
+        du[i+5N] = αIE * (-gIE + pIE)
+        #gEI
+        du[i+6N] = αEI * (-gEI + pEI)
+        #gII
+        du[i+7N] = αII * (-gII + pII)
+        #gext
+        du[i+8N] = αext * (-gext + pext)
+        #pEE
+        du[i+9N] = αEE * (-pEE + κSEE*rE)
+        #pIE
+        du[i+10N] = αIE * (-pIE + κSIE * rE)
+        #pEI
+        du[i+11N] = αEI * (-pEI + κSEI * rI)
+        #pII
+        du[i+12N] = αII * (-pII + κSII * rI)
+        #pext
+        du[i+13N] = αext * (-pext + κ*d)
+        
       end
-  
   end
