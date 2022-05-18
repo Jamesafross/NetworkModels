@@ -1,5 +1,5 @@
 #includes 
-using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,Random,NLsolve,Statistics,Parameters,Interpolations,MKL
+using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,Random,NLsolve,Statistics,Parameters,Interpolations
 
 HOMEDIR = homedir()
 WORKDIR="$HOMEDIR/NetworkModels/2PopNextGen"
@@ -36,7 +36,7 @@ N = size(SC,1)
 W = zeros(N,N)
 W.=SC
 NGp = get(ParSets,"Pset_2",1)
-NGp = NextGen2PopParams2(η_0E = -14.19,κ=NGp.κSEE*0.101)
+#NGp = NextGen2PopParams(η_0E = 1.,κ=0.0)
 
 κSEEv = ones(N)*NGp.κSEE
 κSIEv = ones(N)*NGp.κSIE
@@ -47,10 +47,10 @@ NGp = NextGen2PopParams2(η_0E = -14.19,κ=NGp.κSEE*0.101)
 κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
 
 bP = ballonModelParameters()
-nWindows = 100
+nWindows = 1
 tWindows = 300.0
-stimOpts = "on"
-adapt = "on"
+stimOpts = "off"
+adapt = "off"
 opts=modelOpts(stimOpts,adapt)
 
 println("Running model ... ")

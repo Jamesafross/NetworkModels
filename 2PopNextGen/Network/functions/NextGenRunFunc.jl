@@ -15,7 +15,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
             u0 = zeros(8N)
             u0[:] = makeInitConds(NGp)
             global vP = variousPars(0.0, 100.0,0)
-            global aP = adaptParams(95.0,u0[1:N])
+            global aP = adaptParams(100.01,u0[1:N])
             
       
             hparams = u0

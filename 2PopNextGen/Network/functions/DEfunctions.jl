@@ -14,19 +14,23 @@ function NextGen(du,u,h,p,t)
     @unpack W,dist,lags,N = nP
     @unpack tP,HIST = aP 
     
+    
  
    
    
 
     
-    #if  t >= tP && adapt == "on"
-     #   #println(t)
+    if  t >= tP && adapt == "on"
+        #println(t)
       #  aP.HIST = hcat(aP.HIST,u[1:N])
        # if size(aP.HIST,2) > 100
         #    aP.HIST = aP.HIST[:, 1:end .!= 1]
         #end
-        #aP.tP += 0.01  
-    #end
+        κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000005)
+        aP.tP += 0.01  
+        aP.tP = round(aP.tP,digits=2)
+        vP.count += 1
+    end
 
 
  
@@ -55,20 +59,20 @@ function NextGen(du,u,h,p,t)
           
 
 
-          if ((t==round(timeAdapt,digits=3)  && (t != tPrev)) || (t - tPrev > 0.01)) && (adapt == "on") && t >= timeAdapt
+         # if ((t==round(timeAdapt,digits=3)  && (t != tPrev)) || (t - tPrev > 0.01)) && (adapt == "on") && t >= timeAdapt
             
 
-            κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000005)
+            #κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000005)
             #println(cor(aP.HIST[1,:],aP.HIST[100,:]))
-            if i == N
-                nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
-                vP.timeAdapt += 0.01
-                vP.tPrev = maximum([vP.tPrev,t])
-                vP.count += 1
-            end
+            #if i == N
+               # nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
+               # vP.timeAdapt += 0.01
+               # vP.tPrev = maximum([vP.tPrev,t])
+                
+            #end
            
             #println(t)
-        end
+        #end
 
             
          
