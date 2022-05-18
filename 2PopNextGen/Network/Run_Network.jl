@@ -1,5 +1,5 @@
 #includes 
-using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,StochasticDelayDiffEq,Random,NLsolve,Statistics,Parameters,Interpolations
+using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,Random,NLsolve,Statistics,Parameters,Interpolations,MKL
 
 HOMEDIR = homedir()
 WORKDIR="$HOMEDIR/NetworkModels/2PopNextGen"
@@ -9,13 +9,13 @@ include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
 
-stimNodes = [21,39]
+stimNodes = [39]
 Tstim = [60,90]
 
 
 
 #load data and make struct & dist matrices
-c=13500.
+c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
 
 FC_Array = FC_Array
@@ -27,24 +27,30 @@ SC = 0.01*SC_Array[:,:,1]
 
 lags = dist./c
 
-lags = round.(lags,digits=3) 
+lags = round.(lags,digits=2) 
 lags[lags.<0.003] .= 0.000
 #lags[SC .< 0.018] .= 0  
 minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
 
- # lags cant be zero for solver
 W = zeros(N,N)
 W.=SC
 NGp = get(ParSets,"Pset_2",1)
-NGp = NextGen2PopParams2(η_0E = -14.1)
+NGp = NextGen2PopParams2(η_0E = -14.19,κ=NGp.κSEE*0.101)
+
+κSEEv = ones(N)*NGp.κSEE
+κSIEv = ones(N)*NGp.κSIE
+κSEIv = ones(N)*NGp.κSEI
+κSIIv = ones(N)*NGp.κSII
+κSUM = κSEEv[1]+κSIEv[1]+κSEIv[1]+κSIIv[1]
+
+κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
 
 bP = ballonModelParameters()
-nWindows = 1
+nWindows = 100
 tWindows = 300.0
-
-stimOpts = "off"
-adapt = "off"
+stimOpts = "on"
+adapt = "on"
 opts=modelOpts(stimOpts,adapt)
 
 println("Running model ... ")
@@ -81,7 +87,7 @@ end
 
 #println("fit = ", fit[:])
 #scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
-#scatter!(collect(1:1:nWindows),fit2,label="FC (r²) fit (mean)")
+#scatter!(collect(1:1:nWindows),fitκ2,label="FC (r²) fit (mean)")
 #scatter!(collect(1:1:nWindows),fit,label="FC (r) fit (mean)")
 #scatterplot2 = scatter!(real(fitArray),imag(fitArray),label="FC fit (windows)")
 #heatmap(Rsave[:,:,1])
@@ -102,8 +108,10 @@ end
 
 savename = save1*save2
 
+println(fit)
 
-save("$HOMEDIR/NetworkModels/2PopNextGen/data/dataSave_$savename.jld","dataSave_$savename",dataSave)
+
+save("$HOMEDIR/NetworkModels/2PopNextGen/data/dataSave_$savename.jld","data_save_$savename",dataSave)
 
 scatter(collect(1:1:nWindows),fit,label="FC fit ")
 

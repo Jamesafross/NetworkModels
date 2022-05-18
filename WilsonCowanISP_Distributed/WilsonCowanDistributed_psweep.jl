@@ -1,7 +1,7 @@
 using Distributed,LinearAlgebra,SharedArrays,Plots
 
-if nprocs() < 8
-    addprocs(8)
+if nprocs() < 4
+    addprocs(4)
     println("Number of Workers = ", nworkers())
 end
 #includes
@@ -21,26 +21,25 @@ end
     WORKDIR="$HOMEDIR/NetworkModels/WilsonCowan_Distributed"
     InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
     #load data and make struct & dist matrices
-
-    SC = load("$InDATADIR/PaulSC.jld","C")
-    dist = load("$InDATADIR/PaulDist.jld","dist")
-    N = size(SC,1) # number of nodes
-    c =7000. # conductance velocity
-    lags = round.(dist./c,digits=2) # axonal delays
+    include("$InDATADIR/getData.jl")
     stimNodes = [21,39]
     Tstim = [60,90]
-    if normaliseSC == 1
-        SC = normalise(SC,N)
-        W_sum = ones(N)
-    else
-        W_sum = zeros(N)
-        for i = 1:N
-            W_sum[i] = sum(SC[:,i])
-        end 
-    end
-    minSC = minimum(SC[SC.>0.0])
+    #load data and make struct & dist matrices
+    c=7000.
+    SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
+    FC_Array = FC_Array
+    PaulFCmean = mean(FC_Array,dims=3)
+    SC = 0.01*SC_Array[:,:,1]
+    lags = dist./c
+    lags = round.(lags,digits=2) 
+    lags[lags.<0.003] .= 0.000
+    #lags[SC .< 0.018] .= 0  
+    minSC,W_sum=getMinSC_and_Wsum(SC)
+    N = size(SC,1)
+    W = zeros(N,N)
+    W.=SC
 end
-PaulFCmean = load("$InDATADIR/PaulFCmean_140.jld","paulFCmean_140")
+
 
 # get parameters and make structures
 
@@ -58,8 +57,7 @@ nTrials = 40
 R_Array = SharedArray(zeros(N,N,nWindows,nTrials))
 fitArray = zeros(nWindows,nTrials)
 W_save = SharedArray(zeros(N,N,nWindows,nTrials))
-W = zeros(N,N)
-W .= SC
+
 stimOpts = "off"
 adapt = "on"
 opts=modelOpts(stimOpts,adapt)

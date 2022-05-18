@@ -14,36 +14,44 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
         if j == 1
             u0 = zeros(8N)
             u0[:] = makeInitConds(NGp)
-            vP = variousPars(0.0, 100.0)
+            global vP = variousPars(0.0, 100.0,0)
             global aP = adaptParams(95.0,u0[1:N])
+            
       
             hparams = u0
         else
-            opts.stimOpt = "off"
+            
             u0 = sol[:,end]
-            iStart = findfirst(sol.t .> tWindows - 1.0)
-            u_hist = make_uhist(sol.t[iStart:end] .- sol.t[end],sol[:,iStart:end])
+            iStart = findfirst(sol.t .> tWindows - 1.1)
+            rE0 = sol[1:N,:]
+            u_hist = make_uhist(sol.t[iStart:end] .- sol.t[end],sol[1:2N,iStart:end])
             hparams = u_hist
           
-            vP = variousPars(0.0, 0.01)
+            vP = variousPars(0.0, 0.01,0)
             aP.tP = 0.01
             println(size(aP.HIST))
             
+        end
+
+        if j == 2;
+            opts.stimOpt = "on"
+        else
+            opts.stimOpt = "off"
         end
         
         tspan = (0.0,tWindows)
         adpStops = collect(0.01:0.01:tWindows)
         #println(adpTime)
-        clags = unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0])))
+        clags = cat(unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0]))),1.0,dims=1)
         println(clags)
     
-        p = (NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts)
+        global p = (NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts)
         if j == 1
-            prob = DDEProblem(NextGen,u0, h1, tspan, p ; constant_lags = clags)
-            sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
+            prob = DDEProblem(NextGen,u0, h1, tspan, p)
+             global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
         else
-            prob = DDEProblem(NextGen,u0, h2, tspan, p ; constant_lags = clags)
-            sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
+            prob = DDEProblem(NextGen,u0, h2, tspan, p)
+            global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
         end
         
 
@@ -54,7 +62,7 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
         balloonParams = bP,BalloonIn
         b0 =  cat(zeros(N),ones(3N),dims=1)
        
-        out,v_save = runBalloon(b0,balloonParams,tspanB,collect(sol.t[1]+15:2:sol.t[end]))
+        @time out,v_save = runBalloon(b0,balloonParams,tspanB,collect(sol.t[1]+15:2:sol.t[end]))
         
         out_trans=(out')    
 

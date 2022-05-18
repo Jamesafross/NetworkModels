@@ -27,18 +27,17 @@ function make_uhist(tgrid,u)
     return interp
 end
 
-function adapt_global_coupling(hparams,VsynEE,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64},minSC::Float64,W_sum::Vector{Float64},vP)
+function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{Float64},h,t::Float64,u::Vector{Float64},minSC::Float64,W_sum::Vector{Float64})
     @inbounds for ii = 1:N
-        currentHistii = h(hparams,t-1.0;idxs=ii+4N)*(VsynEE -h(hparams,t-1.0;idxs=ii+2N ) )
+
         @inbounds for jj = 1:N
-            currentHistjj = u[jj+4N]*(VsynEE-u[jj+2N]) - h(hparams,t-1.0;idxs=jj+4N)*(VsynEE -h(hparams,t-1.0;idxs=jj+2N ))
-                   
-            if W[jj,ii]  > 0.0
-                if lags[jj,ii] == 0.0
+         
+            if W[ii,jj]  > 0.0
+                if lags[ii,jj] == 0.0
                     
-                     W[jj,ii] += 0.01*u[ii+4N]*(VsynEE - u[ii+2N])*(currentHistjj)
+                     W[ii,jj] += 0.000001*u[ii]*(u[jj] - h(hparams,t-1.0;idxs=jj))
                 else
-                     W[jj,ii] += 0.01*currentHistii*(currentHistjj)
+                     W[ii,jj] += 0.000001*h(hparams,t-lags[ii,jj];idxs=ii)*(u[jj] - h(hparams,t-1.0;idxs=jj))
                 end
                 if W[jj,ii] < minSC
                     W[jj,ii] = minSC
@@ -86,11 +85,36 @@ function modHeaviside(x)
 end
 
 function ΔWsdp(cij::Float64,hsdp::Float64,bsdp::Float64)
-    return 0.0000005*hill(rij(cij,bsdp),hsdp,bsdp)
+    return 0.0001*hill(rij(cij,bsdp),hsdp,bsdp)
 end
 
 function ΔWgtp(w,dist,cij,agdp,ηgdp)
     return agdp*modHeaviside(w - exp(cij*dist))*ηgdp
+end
+
+function getHistMat(HISTMAT,h,u,hparams,lags,t,N)
+    for i = 1:N
+        for j = 1:N
+            if lags[i,j] > 0
+                HISTMAT[i,j] = h(hparams,t-lags[i,j];idxs=j)#
+            else
+                HISTMAT[i,j] = u[j]
+            end
+        end
+    end
+end
+
+
+function adapt_local_func(h,hparams,t,κS,rE,rI,i,N,c)
+        @unpack κSEEv,κSIEv,κSEIv,κSIIv,κSUM = κS
+        κSEEv[i] += c*rE*(rE - h(hparams,t-1.0;idxs = i))
+        κSIEv[i] += c*rI*(rE - h(hparams,t-1.0;idxs = i))
+        κSEIv[i] += c*rE*(rI - h(hparams,t-1.0;idxs = i+N))
+        κSIIv[i] += c*rI*(rI - h(hparams,t-1.0;idxs = i+N))
+
+        κSEEv[i], κSIEv[i],κSEIv[i], κSIIv[i] = κSUM*[κSEEv[i], κSIEv[i], κSEIv[i], κSIIv[i]]/(κSEEv[i] + κSIEv[i] + κSEIv[i] + κSIIv[i])
+ 
+    return κSEEv[i],κSIEv[i],κSEIv[i],κSIIv[i]
 end
 
 
@@ -193,7 +217,7 @@ end
 
 function stim(t,i,stimNodes,Tstim,nRun,stimOpt)
     if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && (stimOpt == "on" || stimOpt == "ON")
-        return 6.
+        return 5.
     else
         return 0.
     end
