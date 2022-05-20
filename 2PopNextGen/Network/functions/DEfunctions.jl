@@ -42,7 +42,7 @@ function NextGen(du,u,h,p,t)
         # if size(aP.HIST,2) > 100
         #    aP.HIST = aP.HIST[:, 1:end .!= 1]
         #end
-        κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000005)
+        κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000002)
         if i == N
             aP.tP += 0.01  
             aP.tP = round(aP.tP,digits=2)

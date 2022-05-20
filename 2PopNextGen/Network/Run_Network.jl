@@ -15,37 +15,29 @@ Tstim = [60,90]
 #load data and make struct & dist matrices
 c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
-
 FC_Array = FC_Array
-
 PaulFCmean = mean(FC_Array,dims=3)
-
 SC = 0.01*SC_Array[:,:,1]
-
-
 lags = dist./c
-
 lags = round.(lags,digits=2) 
 lags[lags.<0.003] .= 0.000
 #lags[SC .< 0.018] .= 0  
 minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
-
 W = zeros(N,N)
 W.=SC
 
 
-
-
-nWindows = 10
+Run = "3"
+nWindows = 16
 tWindows = 300.0
 stimOpt = "off"
 stimWindow = 2
-adapt = "off"
+adapt = "on"
 synapses = "1stOrder"
 
 NGp = get(ParSets,"Pset_2",1)
-NGp = NextGen2PopParams2(η_0E = -14.181,κ=0.50)
+NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
 κSEEv = ones(N)*NGp.κSEE
 κSIEv = ones(N)*NGp.κSIE
 κSEIv = ones(N)*NGp.κSEI
@@ -114,7 +106,7 @@ savename = save1*save2
 println(fit)
 
 
-save("$HOMEDIR/NetworkModels/2PopNextGen/data/dataSave_$savename.jld","data_save_$savename",dataSave)
+save("$HOMEDIR/NetworkModels/2PopNextGen/data/Run_$Run/dataSave_$savename.jld","data_save_$savename",dataSave)
 
 scatter(collect(1:1:nWindows),fit,label="FC fit ")
 
