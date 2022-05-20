@@ -45,14 +45,11 @@ boot_Time <- function(d){
 #################
 ### Load data ###
 #################
+R_CONT <- lapply(list.files(path = "/home/james/NetworkModels/Rcode/data_nextgen/NO_STIM", pattern=glob2rx("control_windows*.txt"), full.names=T), read.table, header = T, sep = "", dec = ",")
 
-R_FUS <- lapply(list.files(path = "D:\\Projets\\Projet - FUS\\Macaque Paul\\Matrices\\All_and_scripts\\dFC_results\\v2\\FUS", pattern=glob2rx("R_*.txt"), full.names=T), read.table, header = T, sep = "", dec = ",")
-names(R_FUS) <- gsub('.txt', "", list.files(path = "D:\\Projets\\Projet - FUS\\Macaque Paul\\Matrices\\All_and_scripts\\dFC_results\\v2\\FUS", pattern=glob2rx("R_*.txt")))
+R_FUS <- lapply(list.files(path = "/home/james/NetworkModels/Rcode/data_nextgen/STIM", pattern=glob2rx("FUS_windows*.txt"), full.names=T), read.table, header = T, sep = "", dec = ",")
 
-Data <- read_excel("D:\\Projets\\Projet - FUS\\Macaque Paul\\Matrices\\All_and_scripts\\rsfMRI_BOLD.xlsx",1)
 
-Data <- Data[!(Data$Suj == "7u1" & Data$Run == "Run2" ),]
-Data <- Data[!(Data$Suj == "HS1_s2018" & Data$Run == "Run2" ),]
 
 ###########
 ### Run ###
@@ -76,14 +73,6 @@ for (x in 1:140){
 										R_FUS[[z]][x,j],										
 										gsub(as.numeric(gsub("m", '', gsub("e", '', gsub("_", '', str_sub(names(R_FUS)[[z]], -5))))), '', names(R_FUS)[[z]]))
 		}
-
-		df_cont = subset(Data, Group == "Control")
-		df_cont$Suj2 = paste(df_cont$Suj, "_", df_cont$Run, sep="")
-		df_cont = df_cont[c(x+4, j+4, ncol(df_cont))]
-		colnames(df_cont)[c(1,2)] = c("ROI1", "ROI2")
-		df_cont <- ddply(df_cont, .(Suj2), summarize, R = cor.test(ROI1, ROI2)$estimate)
-
-		
 
 		## Boot
 
