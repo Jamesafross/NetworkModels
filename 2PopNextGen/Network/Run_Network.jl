@@ -12,8 +12,6 @@ include("$InDATADIR/getData.jl")
 stimNodes = [39]
 Tstim = [60,90]
 
-
-
 #load data and make struct & dist matrices
 c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
@@ -35,26 +33,31 @@ N = size(SC,1)
 
 W = zeros(N,N)
 W.=SC
+
+
+
+
+nWindows = 10
+tWindows = 300.0
+stimOpt = "off"
+stimWindow = 2
+adapt = "off"
+synapses = "1stOrder"
+
 NGp = get(ParSets,"Pset_2",1)
 NGp = NextGen2PopParams2(η_0E = -14.181,κ=0.50)
-
 κSEEv = ones(N)*NGp.κSEE
 κSIEv = ones(N)*NGp.κSIE
 κSEIv = ones(N)*NGp.κSEI
 κSIIv = ones(N)*NGp.κSII
 κSUM = κSEEv[1]+κSIEv[1]+κSEIv[1]+κSIIv[1]
-
 κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
-
 bP = ballonModelParameters()
-nWindows = 1
-tWindows = 300.0
-stimOpts = "off"
-adapt = "off"
-opts=modelOpts(stimOpts,adapt)
+opts=solverOpts(stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows)
+nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
 println("Running model ... ")
-@time Rsave,Wsave,out = NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
+@time Rsave,Wsave,out = NGModelRun(NGp,bP,nP,opts)
 
 
 FC_Array_stim= getFCstim_nonaverages()
@@ -95,7 +98,7 @@ end
 fitAll = [[fit],[fit2],[fit_stim],[fit2_stim]]
 dataSave = dataStruct(Rsave,fitAll,Wsave)
 
-if stimOpts == "on"
+if stimOpt == "on"
     save1 = "stim"
 else
     save1="NOstim"

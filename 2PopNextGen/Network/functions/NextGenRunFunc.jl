@@ -1,4 +1,4 @@
-function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
+function NGModelRun(NGp,bP,nP,opts)
     
     
     R = zeros(N,N,nWindows)
@@ -7,7 +7,6 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
     size_out = length(BOLD_saveat)
     BOLD_out = zeros(N,size_out,nWindows)
    
-    nP = networkParameters(W, dist,lags, N)
    
     for j = 1:nWindows
         if nWindows > 1
@@ -36,25 +35,25 @@ function NGModelRun(NGp,bP,nWindows,tWindows,W,lags,dist,N,minSC,W_sum,opts)
             println(size(aP.HIST))
             
         end
-
-        if j == 2;
-            opts.stimOpt = "on"
-        else
-            opts.stimOpt = "off"
-        end
         
         tspan = (0.0,tWindows)
         adpStops = collect(0.01:0.01:tWindows)
-        #println(adpTime)
         clags = cat(unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0]))),1.0,dims=1)
         println(clags)
     
-        global p = (NGp,nP,vP,aP,stimNodes,Tstim,hparams,j,minSC,W_sum,opts)
+        global p = (NGp,nP,vP,aP,hparams,j,opts)
+
+        if opts.synapses == "1stOrder"
+            probDDE = NextGen
+        elseif opts.synapses == "2ndOrder"
+            probDDE = NextGen2ndOrderSynapses
+        end
+
         if j == 1
-            prob = DDEProblem(NextGen,u0, h1, tspan, p)
-             global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
+            prob = DDEProblem(probDDE,u0, h1, tspan, p)
+            global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
         else
-            prob = DDEProblem(NextGen,u0, h2, tspan, p)
+            prob = DDEProblem(probDDE,u0, h2, tspan, p)
             global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01)
         end
         vE = sol[2N+1:3N,:]

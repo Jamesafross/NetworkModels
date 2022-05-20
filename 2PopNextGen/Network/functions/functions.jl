@@ -215,8 +215,9 @@ function makeInitConds(NGp)
     u0 = u0 + perturb
 end
 
-function stim(t,i,stimNodes,Tstim,nRun,stimOpt)
-    if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && (stimOpt == "on" || stimOpt == "ON")
+function stim(t,i,stimNodes,Tstim,nWindow,stimOpt,stimWinow)
+
+    if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && (stimOpt == "on" || stimOpt == "ON") && nWindow == stimWindow
         return 5.
     else
         return 0.
