@@ -1,5 +1,14 @@
-using LinearAlgebra,Plots,StochasticDelayDiffEq,Parameters,Statistics,StatsBase,DifferentialEquations,JLD,LinearAlgebra,Interpolations
 
+using Distributed,LinearAlgebra,SharedArrays,Plots
+
+if nprocs() < 4
+    addprocs(4)
+    println("Number of Workers = ", nworkers())
+end
+#includes
+
+@everywhere begin 
+    using StochasticDelayDiffEq,Parameters,Statistics,StatsBase,DifferentialEquations,JLD,LinearAlgebra,Interpolations
     include("functions/functions.jl")
     include("../Balloon_Model/balloonModelFunctions.jl")
     include("../Balloon_Model/balloonModelRHS.jl")
@@ -37,3 +46,10 @@ using LinearAlgebra,Plots,StochasticDelayDiffEq,Parameters,Statistics,StatsBase,
 
     opts=solverOpts(stimOpt,stimWindow,stimNodes,Tstim,adapt,tWindows,nWindows,ISP)
     nP = networkParameters(W, dist,lags, N,minSC,W_sum)
+
+end
+
+
+
+    
+

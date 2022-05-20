@@ -33,13 +33,13 @@ end
 end
 
 mutable struct networkParameters
-    W::Matrix{Real}
-    lags::Matrix{Real}
+    W::Matrix{Float64}
+    dist::Matrix{Float64}
+    lags::Matrix{Float64}
     N::Int64
-    minSC::Real
-    W_sum::Vector{Real}
+    minSC::Float64
+    W_sum::Vector{Float64}
 end
-
 
 
 mutable struct dataStruct
@@ -60,7 +60,6 @@ mutable struct solverOpts
     stimNodes::Vector{Real}
     Tstim::Vector{Real}
     adapt::String
-    synapses::String
     tWindows::Real
     nWindows::Real
     ISP::String

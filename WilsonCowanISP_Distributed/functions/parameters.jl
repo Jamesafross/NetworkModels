@@ -14,7 +14,6 @@
     Pext::R  =0.31
     τISP::R = 20.
     ρ::R = 0.15
-
 end
 
 mutable struct networkParameters

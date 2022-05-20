@@ -1,16 +1,8 @@
 parallel = "off"
+include("setupPAR.jl")
 
 
 
-
-stimOpt = "off"
-stimWindow = 2
-stimNodes = [37]
-Tstim = [30,60]
-adapt = "off"
-tWindows = 300.
-nWindows = 1
-ISP = "off"
 
 
 
