@@ -28,10 +28,10 @@ W = zeros(N,N)
 W.=SC
 
 
-Run = "3"
+Run = "1"
 nWindows = 16
 tWindows = 300.0
-stimOpt = "off"
+stimOpt = "on"
 stimWindow = 2
 adapt = "on"
 synapses = "1stOrder"

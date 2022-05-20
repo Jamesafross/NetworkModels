@@ -218,7 +218,7 @@ end
 function stim(t,i,stimNodes,Tstim,nWindow,stimOpt,stimWinow)
 
     if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && (stimOpt == "on" || stimOpt == "ON") && nWindow == stimWindow
-        return 5.
+        return -10.
     else
         return 0.
     end
