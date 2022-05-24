@@ -3,7 +3,8 @@ using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,Random,NLsolve,Statistic
 
 HOMEDIR = homedir()
 WORKDIR="$HOMEDIR/NetworkModels/2PopNextGen"
-InDATADIR="$HOMEDIR/NetworkModels/StructDistMatrices"
+InDATADIR="$HOMEDIR/NetworkModels_Data/StructDistMatrices"
+OutDATADIR="$HOMEDIR/NetworkModels_Data/2PopNextGen_Data"
 include("./functions/NextGenFunctions.jl")
 include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")

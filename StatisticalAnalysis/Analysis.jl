@@ -2,8 +2,8 @@ using JLD
 using DelimitedFiles,Statistics,Plots
 
 HOMEDIR = homedir()
-INDATADIR = "$HOMEDIR/NetworkModels/2PopNextGen/data"
-OUTDATADIR = "$HOMEDIR/NetworkModels/Rcode/data_nextgen"
+INDATADIR = "$HOMEDIR/NetworkModels_Data/2PopNextGen_Data"
+OUTDATADIR = "$HOMEDIR/NetworkModels_Data/Rcode_Data/2PopNextGen_Data"
 
 runs = 5
 
