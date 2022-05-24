@@ -190,7 +190,7 @@ function normalise(W,N)
 end
 
 
-function makeInitConds(NGp)
+function makeInitConds(NGp,N)
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
     κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
     
@@ -215,11 +215,11 @@ function makeInitConds(NGp)
     u0 = u0 + perturb
 end
 
-function stim(t,i,stimNodes,Tstim,nWindow,stimOpt,stimWinow)
+function stim(t,i,stimNodes,Tstim,nWindow,stimOpt,stimWindow)
 
     if i ∈ stimNodes && (Tstim[1] <t < Tstim[2]) && (stimOpt == "on" || stimOpt == "ON") && nWindow == stimWindow
         return -10.
-    else
+    else 
         return 0.
     end
 end

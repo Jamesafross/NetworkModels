@@ -1,21 +1,21 @@
-parallel = "off"
-include("setupPAR.jl")
-
-
-
-
+parallel = "on"
+if parallel == "on"
+    include("setupDistributed.jl")
+else
+    include("setup.jl")
+end
 
 
 
 # get parameters and make structures
-
-
-WCp= WCparams()
+if opts.ISP == "on"
+    WCparamsISP()
+else
+    WCp= WCparams()
+end
 bP = ballonModelParameters()
 
 # Stimulation Setup
-
-
 nWindows = 20
 tWindows = 300.0
 nTrials = 1
@@ -29,11 +29,18 @@ adapt = "on"
 opts=modelOpts(stimOpts,adapt)
 
 
+if parallel == "on"
 @sync @distributed for i = 1:nTrials
     println("working on Trial: ",i)
-
-    Rsave[:,:,:,i],W_save[:,:,:,i] = WCRun(WCp,bP,nWindows,tWindows,W,lags,N,minSC,W_sum,opts)
+    Rsave[:,:,:,i],W_save[:,:,:,i] = WCRun(WCp,bP,opts)
 end
+else
+    for i = 1:nTtrials
+    println("working on Trial: ",i)
+    Rsave[:,:,:,i],W_save[:,:,:,i] = WCRun(WCp,bP,opts)
+    end
+end
+
 
 if nTrials == 1
     Rsave[:,:,:,1] = Rsave[:,:,:,1][:,:,:]

@@ -3,7 +3,7 @@
 # solver                        #
 #################################
 function NextGen(du,u,h,p,t)
-    NGp,nP,vP,aP,hparams,nWindow,opts = p
+    NGp,nP,vP,aP,κS,hparams,nWindow,opts = p
 
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
     κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
@@ -44,6 +44,7 @@ function NextGen(du,u,h,p,t)
         #end
         κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000002)
         if i == N
+            nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
             aP.tP += 0.01  
             aP.tP = round(aP.tP,digits=2)
             vP.count += 1

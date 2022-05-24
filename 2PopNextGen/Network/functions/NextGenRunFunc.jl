@@ -1,5 +1,6 @@
-function NGModelRun(NGp,bP,nP,opts)
-    
+function NGModelRun(NGp,bP,nP,κS,opts)
+   @unpack W, dist,lags,N,minSC,W_sum = nP
+   @unpack stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows = opts
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)
@@ -9,6 +10,9 @@ function NGModelRun(NGp,bP,nP,opts)
    
    
     for j = 1:nWindows
+       
+ 
+         
         if nWindows > 1
             println("working on window  : ",j)
         end
@@ -16,7 +20,7 @@ function NGModelRun(NGp,bP,nP,opts)
      
         if j == 1
             u0 = zeros(8N)
-            u0[:] = makeInitConds(NGp) .+ 0.001*randn(8N)
+            u0[:] = makeInitConds(NGp,N) .+ 0.001*randn(8N)
             global vP = variousPars(0.0, 100.0,0)
             global aP = adaptParams(100.01,u0[1:N])
             
@@ -41,7 +45,7 @@ function NGModelRun(NGp,bP,nP,opts)
         clags = cat(unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0]))),1.0,dims=1)
         println(clags)
     
-        global p = (NGp,nP,vP,aP,hparams,j,opts)
+        global p = (NGp,nP,vP,aP,κS,hparams,j,opts)
 
         if opts.synapses == "1stOrder"
             probDDE = NextGen
@@ -71,14 +75,14 @@ function NGModelRun(NGp,bP,nP,opts)
     
         BalloonIn= make_In(sol.t,Current)
         tspanB = (sol.t[1],sol.t[end])
-        balloonParams = bP,BalloonIn
+        balloonParams = bP,BalloonIn,N
         if j == 1
             b0 =  cat(zeros(N),ones(3N),dims=1)
         else
             b0 = endBM
         end
        
-         global out,endBM = runBalloon(b0,balloonParams,tspanB,BOLD_saveat)
+         global out,endBM = runBalloon(b0,balloonParams,tspanB,BOLD_saveat,N)
         
         out_trans=(out')    
 

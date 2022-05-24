@@ -8,7 +8,11 @@ include("./functions/NextGenFunctions.jl")
 include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
+Run_vec = LinRange(6,10,5)
+plot_fit = "false"
 
+
+for jj = 1:length(Run_vec)
 stimNodes = [39]
 Tstim = [60,90]
 
@@ -17,7 +21,6 @@ c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
 FC_Array = FC_Array
 PaulFCmean = mean(FC_Array,dims=3)
-SC = 0.01*SC_Array[:,:,1]
 lags = dist./c
 lags = round.(lags,digits=2) 
 lags[lags.<0.003] .= 0.000
@@ -28,7 +31,7 @@ W = zeros(N,N)
 W.=SC
 
 
-Run = "1"
+Run = string(Int(round(Run_vec[jj])))
 nWindows = 16
 tWindows = 300.0
 stimOpt = "on"
@@ -49,7 +52,7 @@ opts=solverOpts(stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWind
 nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
 println("Running model ... ")
-@time Rsave,Wsave,out = NGModelRun(NGp,bP,nP,opts)
+@time Rsave,Wsave,out = NGModelRun(NGp,bP,nP,κS,opts)
 
 
 FC_Array_stim= getFCstim_nonaverages()
@@ -108,6 +111,10 @@ println(fit)
 
 save("$HOMEDIR/NetworkModels/2PopNextGen/data/Run_$Run/dataSave_$savename.jld","data_save_$savename",dataSave)
 
+
+end
+
+if plot_fit == "true"
 scatter(collect(1:1:nWindows),fit,label="FC fit ")
 
 scatter!(collect(1:1:nWindows),fit2,label="FC fit2 ")
@@ -120,3 +127,4 @@ plot!(collect(1:1:nWindows),fit2,label="FC fit2 ")
 plot!(collect(1:1:nWindows),fit_stim,label="FC stim fit ")
 
 scatterplot1 =  plot!(collect(1:1:nWindows),fit2_stim,label="FC stim fit2 ")
+en1
