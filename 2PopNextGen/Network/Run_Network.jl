@@ -9,7 +9,7 @@ include("./functions/NextGenFunctions.jl")
 include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
-Run_vec = LinRange(6,10,5)
+Run_vec = LinRange(1,5,5)
 plot_fit = "false"
 
 
@@ -26,6 +26,7 @@ lags = dist./c
 lags = round.(lags,digits=2) 
 lags[lags.<0.003] .= 0.000
 #lags[SC .< 0.018] .= 0  
+SC = SC_Array[:,:,1]
 minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
 W = zeros(N,N)
@@ -110,7 +111,7 @@ savename = save1*save2
 println(fit)
 
 
-save("$HOMEDIR/NetworkModels/2PopNextGen/data/Run_$Run/dataSave_$savename.jld","data_save_$savename",dataSave)
+save("$OutDATADIR/Run_$Run/dataSave_$savename.jld","data_save_$savename",dataSave)
 
 
 end
