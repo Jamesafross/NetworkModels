@@ -23,8 +23,6 @@ function NGModelRun(NGp,bP,nP,κS,opts)
             u0[:] = makeInitConds(NGp,N) .+ 0.001*randn(8N)
             global vP = variousPars(0.0, 100.0,0)
             global aP = adaptParams(100.01,u0[1:N])
-            
-      
             hparams = u0
         else
             
@@ -33,7 +31,6 @@ function NGModelRun(NGp,bP,nP,κS,opts)
             rE0 = sol[1:N,:]
             u_hist = make_uhist(sol.t[iStart:end] .- sol.t[end],sol[1:2N,iStart:end])
             hparams = u_hist
-          
             vP = variousPars(0.0, 0.01,0)
             aP.tP = 0.01
             println(size(aP.HIST))

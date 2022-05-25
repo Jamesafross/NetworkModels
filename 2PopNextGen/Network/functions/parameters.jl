@@ -117,3 +117,30 @@ mutable struct weights
     κSIIv
     κSUM
 end
+
+
+@with_kw mutable struct NextGen2PopParams3{R}
+    ΔE::R = 0.5
+    ΔI::R = 0.5
+    η_0E::R = 0.1
+    η_0I::R =0.1
+    τE::R = 0.2
+    τI::R = 0.3
+    αEE::R = 10.
+    αIE::R =10.0
+    αEI::R = 5.0
+    αII::R = 5.0
+    κSEE::R = 0.4
+    κSIE::R = 0.3
+    κSEI::R = 0.1
+    κSII::R = 0.1
+    κVEE::R =0.01
+    κVIE::R =0.0
+    κVEI::R =0.0
+    κVII::R =0.005
+    VsynEE::R =15.0
+    VsynIE::R =15.0
+    VsynEI::R = -5.
+    VsynII::R = -5.
+    κ::R=0.5
+ end

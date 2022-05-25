@@ -1,6 +1,6 @@
-par kappaSII=0.0,etaE=-15,DeltaE=0.5, DeltaI=0.5,etaI=-10,tauE=0.05,tauI=0.06
-par alphaEE=10.2,alphaIE=10.5,alphaEI=3.6,alphaII=2.7
-par kappaSEE=5.0,kappaSIE=3.3,kappaSEI=3.6
+par kappaSII=0,etaE=-15.5.5.5.5.5,DeltaE=0.5, DeltaI=0.5,etaI=-10,tauE=0.05,tauI=0.06
+par alphaEE=10.2,alphaIE=10.5,alphaEI=10.6,alphaII=10.8
+par kappaSEE=5.,kappaSIE=3.3,kappaSEI=3.6
 par kappaVEE=0,kappaVIE=0,kappaVEI=0,kappaVII=0
 par VsynEE=4.0,VsynIE=1.5,VsynEI=-0.5,VsynII=-1
 

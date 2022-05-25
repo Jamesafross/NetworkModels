@@ -9,8 +9,10 @@ include("./functions/NextGenFunctions.jl")
 include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
-Run_vec = LinRange(1,5,5)
+Run_vec = LinRange(1,2,2)
 plot_fit = "false"
+
+# constants 
 
 
 for jj = 1:length(Run_vec)
@@ -18,6 +20,7 @@ stimNodes = [39]
 Tstim = [60,90]
 
 #load data and make struct & dist matrices
+
 c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
 FC_Array = FC_Array
@@ -26,23 +29,24 @@ lags = dist./c
 lags = round.(lags,digits=2) 
 lags[lags.<0.003] .= 0.000
 #lags[SC .< 0.018] .= 0  
-SC = SC_Array[:,:,1]
+SC = 0.01SC_Array[:,:,1]
 minSC,W_sum=getMinSC_and_Wsum(SC)
 N = size(SC,1)
 W = zeros(N,N)
 W.=SC
-
+NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
+nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
 Run = string(Int(round(Run_vec[jj])))
 nWindows = 16
 tWindows = 300.0
-stimOpt = "on"
+stimOpt = "off"
 stimWindow = 2
 adapt = "on"
 synapses = "1stOrder"
 
-NGp = get(ParSets,"Pset_2",1)
-NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
+
+
 κSEEv = ones(N)*NGp.κSEE
 κSIEv = ones(N)*NGp.κSIE
 κSEIv = ones(N)*NGp.κSEI
@@ -51,7 +55,6 @@ NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
 κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
 bP = ballonModelParameters()
 opts=solverOpts(stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows)
-nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
 println("Running model ... ")
 @time Rsave,Wsave,out = NGModelRun(NGp,bP,nP,κS,opts)
@@ -129,4 +132,4 @@ plot!(collect(1:1:nWindows),fit2,label="FC fit2 ")
 plot!(collect(1:1:nWindows),fit_stim,label="FC stim fit ")
 
 scatterplot1 =  plot!(collect(1:1:nWindows),fit2_stim,label="FC stim fit2 ")
-en1
+end
