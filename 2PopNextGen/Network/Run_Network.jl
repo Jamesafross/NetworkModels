@@ -9,7 +9,7 @@ include("./functions/NextGenFunctions.jl")
 include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
-Run_vec = LinRange(1,2,2)
+Run_vec = LinRange(1,10,10)
 plot_fit = "false"
 
 # constants 

@@ -45,11 +45,12 @@ plot!(mean(FC_WINDOWS_stim[i1,i2,:,:],dims=2),ribbon = SD_stim,color="blue",fill
 plot(abs.(mean(FC_WINDOWS_nostim[i1,i2,:,:].-FC_WINDOWS_stim[i1,i2,:,:],dims=2)),ribbon = SD_nostim,color="red",fillalpha=0.2,alpha=1.0,legend=true,ylims=[-1,1],label="no stim")
 
 
-stimWindow = 2
+stimWindow = 12
 AbsDiff = zeros(139,139,16-stimWindow)
-for i = 3:16
-    j = i-2
-    AbsDiff[:,:,j] = abs.(mean(FC_WINDOWS_nostim[:,:,j,:].-FC_WINDOWS_stim[:,:,j,:],dims=3))[:,:]
+for i = stimWindow+1:16
+    j = i-stimWindow
+    println(j)
+    AbsDiff[:,:,j] = abs.(mean(FC_WINDOWS_nostim[:,:,i,:].-FC_WINDOWS_stim[:,:,i,:],dims=3))[:,:]
 end
 
 mAbsDiff = mean(AbsDiff,dims=3)
