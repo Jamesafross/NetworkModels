@@ -20,7 +20,8 @@ function NGModelRun(NGp,bP,nP,κS,opts)
      
         if j == 1
             u0 = zeros(8N)
-            u0[:] = makeInitConds(NGp,N) .+ 0.001*randn(8N)
+            #u0[:] = makeInitConds(NGp,N) .+ 0.001*randn(8N)
+            u0[:] = 0.001*rand(8N)
             global vP = variousPars(0.0, 100.0,0)
             global aP = adaptParams(100.01,u0[1:N])
             hparams = u0

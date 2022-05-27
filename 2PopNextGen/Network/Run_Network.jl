@@ -10,7 +10,9 @@ include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
 Run_vec = LinRange(1,10,10)
-plot_fit = "false"
+Run_vec = [1]
+plot_fit = "true"
+save_data = "false"
 
 # constants 
 
@@ -35,10 +37,11 @@ N = size(SC,1)
 W = zeros(N,N)
 W.=SC
 NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
+NGp = NextGen2PopParams3(η_0E = -5.,κ=0.5)
 nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
 Run = string(Int(round(Run_vec[jj])))
-nWindows = 16
+nWindows = 1
 tWindows = 300.0
 stimOpt = "off"
 stimWindow = 2
@@ -59,7 +62,14 @@ opts=solverOpts(stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWind
 println("Running model ... ")
 @time Rsave,Wsave,out = NGModelRun(NGp,bP,nP,κS,opts)
 
-
+BOLD_OUT=[]
+for ii = 1:nWindows
+    if ii == 1
+        BOLD_OUT = out[:,:,ii]
+    else
+        BOLD_OUT = cat(BOLD_OUT,out[:,:,ii],dims=2)
+    end
+end
 FC_Array_stim= getFCstim_nonaverages()
 
 PaulFCmean_stim = mean(FC_Array_stim,dims=3)[:,:]
@@ -87,14 +97,6 @@ for i = 1:nWindows
     fit2_stim[i] = fitR(Rsave[:,:,i].^2,mean(FC_Array_stim[:,:,bestIdxs2_stim].^2,dims=3))
 end
 
-
-#println("fit = ", fit[:])
-#scatter(collect(1:1:nWindows),SCFCfit,label="SC fit")
-#scatter!(collect(1:1:nWindows),fitκ2,label="FC (r²) fit (mean)")
-#scatter!(collect(1:1:nWindows),fit,label="FC (r) fit (mean)")
-#scatterplot2 = scatter!(real(fitArray),imag(fitArray),label="FC fit (windows)")
-#heatmap(Rsave[:,:,1])
-
 fitAll = [[fit],[fit2],[fit_stim],[fit2_stim]]
 dataSave = dataStruct(Rsave,fitAll,Wsave)
 
@@ -113,9 +115,10 @@ savename = save1*save2
 
 println(fit)
 
-
-save("$OutDATADIR/Run_$Run/dataSave_$savename.jld","data_save_$savename",dataSave)
-
+if save_data =="true"
+    save("$OutDATADIR/Run_$Run/dataSave_$savename.jld","data_save_$savename",dataSave)
+    save("$OutDATADIR/Run_$Run/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)
+end
 
 end
 

@@ -4,6 +4,7 @@
 #################################
 function NextGen(du,u,h,p,t)
     NGp,nP,vP,aP,κS,hparams,nWindow,opts = p
+    
 
 
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
@@ -39,7 +40,7 @@ function NextGen(du,u,h,p,t)
         gII=u[i+7N]
 
         if  t >= tP && adapt == "on"
-        #println(t)
+            println(t)
         #  aP.HIST = hcat(aP.HIST,u[1:N])
         # if size(aP.HIST,2) > 100
         #    aP.HIST = aP.HIST[:, 1:end .!= 1]
