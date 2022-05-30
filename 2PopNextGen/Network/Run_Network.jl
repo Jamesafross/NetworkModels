@@ -1,5 +1,5 @@
 #includes 
-using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,Random,NLsolve,Statistics,Parameters,Interpolations
+using LinearAlgebra,MAT,JLD,DifferentialEquations,Plots,Random,NLsolve,Statistics,Parameters,Interpolations,MKL
 
 HOMEDIR = homedir()
 WORKDIR="$HOMEDIR/NetworkModels/2PopNextGen"
@@ -10,7 +10,6 @@ include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
 Run_vec = LinRange(1,10,10)
-Run_vec = [1]
 plot_fit = "true"
 save_data = "false"
 
@@ -37,13 +36,13 @@ N = size(SC,1)
 W = zeros(N,N)
 W.=SC
 NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
-NGp = NextGen2PopParams3(η_0E = -5.,κ=0.5)
+#NGp = NextGen2PopParams3(η_0E = -5.,κ=0.5)
 nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
 Run = string(Int(round(Run_vec[jj])))
-nWindows = 1
+nWindows = 16
 tWindows = 300.0
-stimOpt = "off"
+stimOpt = "on"
 stimWindow = 2
 adapt = "on"
 synapses = "1stOrder"
