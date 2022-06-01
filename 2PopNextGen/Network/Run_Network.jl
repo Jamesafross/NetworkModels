@@ -15,6 +15,7 @@ save_data = "false"
 
 # constants 
 u0 = zeros(8*139)
+NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
 u0[:] = makeInitConds(NGp,N)
 for jj = 1:length(Run_vec)
 stimNodes = [39]
