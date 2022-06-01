@@ -1,12 +1,10 @@
-function NGModelRun(NGp,bP,nP,κS,opts)
+function NGModelRun(NGp,bP,nP,κS,opts,u0)
    @unpack W, dist,lags,N,minSC,W_sum = nP
    @unpack stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows = opts
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)
-    BOLD_saveat = collect(15:1.6:tWindows)
-    size_out = length(BOLD_saveat)
-    BOLD_out = zeros(N,size_out,nWindows)
+    
    
    
     for j = 1:nWindows
@@ -19,12 +17,13 @@ function NGModelRun(NGp,bP,nP,κS,opts)
 
      
         if j == 1
-            u0 = zeros(8N)
-            #u0[:] = makeInitConds(NGp,N) .+ 0.001*randn(8N)
-            u0[:] = 0.001*rand(8N)
+            
             global vP = variousPars(0.0, 100.0,0)
             global aP = adaptParams(100.01,u0[1:N])
             hparams = u0
+            BOLD_saveat = collect(15:1.6:tWindows)
+            size_out = length(BOLD_saveat)
+            BOLD_out = zeros(N,size_out,nWindows)
         else
             
             u0 = sol[:,end]
@@ -35,7 +34,9 @@ function NGModelRun(NGp,bP,nP,κS,opts)
             vP = variousPars(0.0, 0.01,0)
             aP.tP = 0.01
             println(size(aP.HIST))
-            
+            BOLD_saveat = collect(15:1.6:tWindows)
+            size_out = length(BOLD_saveat)
+            BOLD_out = zeros(N,size_out,nWindows)
         end
         
         tspan = (0.0,tWindows)

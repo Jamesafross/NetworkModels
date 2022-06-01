@@ -14,8 +14,8 @@ plot_fit = "true"
 save_data = "false"
 
 # constants 
-
-
+u0 = zeros(8*139)
+u0[:] = makeInitConds(NGp,N)
 for jj = 1:length(Run_vec)
 stimNodes = [39]
 Tstim = [60,90]
@@ -59,7 +59,7 @@ bP = ballonModelParameters()
 opts=solverOpts(stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows)
 
 println("Running model ... ")
-@time Rsave,Wsave,out = NGModelRun(NGp,bP,nP,κS,opts)
+@time Rsave,Wsave,out = NGModelRun(NGp,bP,nP,κS,opts,u0)
 
 BOLD_OUT=[]
 for ii = 1:nWindows

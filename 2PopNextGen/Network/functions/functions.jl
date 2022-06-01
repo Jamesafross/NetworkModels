@@ -105,15 +105,40 @@ function getHistMat(HISTMAT,h,u,hparams,lags,t,N)
 end
 
 
-function adapt_local_func(h,hparams,t,κS,rE,rI,i,N,c)
+function adapt_local_func(h,hparams,t,κS,NGp,rE,rI,i,N,c)
+        @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
+        κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
         @unpack κSEEv,κSIEv,κSEIv,κSIIv,κSUM = κS
         κSEEv[i] += c*rE*(rE - h(hparams,t-1.0;idxs = i))
         κSIEv[i] += c*rI*(rE - h(hparams,t-1.0;idxs = i))
         κSEIv[i] += c*rE*(rI - h(hparams,t-1.0;idxs = i+N))
         κSIIv[i] += c*rI*(rI - h(hparams,t-1.0;idxs = i+N))
 
-        κSEEv[i], κSIEv[i],κSEIv[i], κSIIv[i] = κSUM*[κSEEv[i], κSIEv[i], κSEIv[i], κSIIv[i]]/(κSEEv[i] + κSIEv[i] + κSEIv[i] + κSIIv[i])
- 
+        #κSEEv[i], κSIEv[i],κSEIv[i], κSIIv[i] = κSUM*[κSEEv[i], κSIEv[i], κSEIv[i], κSIIv[i]]/(κSEEv[i] + κSIEv[i] + κSEIv[i] + κSIIv[i])
+        if κSEEv[i]  > κSEE + 0.2
+            κSEEv[i] = κSEE + 0.2
+        elseif κSEEv[i]  < κSEE - 0.2
+            κSEEv[i] = κSEE - 0.2
+        end
+
+        if κSEIv[i]  > κSEI + 0.2
+            κSEIv[i] = κSEI + 0.2
+        elseif κSEIv[i]  < κSEI - 0.2
+            κSEIv[i] = κSEI - 0.2
+        end
+
+        if κSIEv[i]  > κSIE + 0.2
+            κSIEv[i] = κSIE + 0.2
+        elseif κSIEv[i]  < κSIE - 0.2
+            κSIEv[i] = κSIE - 0.2
+        end
+
+        if κSIIv[i]  > κSII + 0.2
+            κSIIv[i] = κSII + 0.2
+        elseif κSIIv[i]  < κSII - 0.2
+            κSIIv[i] = κSII - 0.2
+        end
+
     return κSEEv[i],κSIEv[i],κSEIv[i],κSIIv[i]
 end
 

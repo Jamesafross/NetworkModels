@@ -45,7 +45,7 @@ function NextGen(du,u,h,p,t)
         # if size(aP.HIST,2) > 100
         #    aP.HIST = aP.HIST[:, 1:end .!= 1]
         #end
-        κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,rE,rI,i,N,0.0000002)
+        κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,NGp,rE,rI,i,N,0.0000002)
         if i == N
             #nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
             aP.tP += 0.01  
