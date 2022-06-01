@@ -9,14 +9,15 @@ include("./functions/NextGenFunctions.jl")
 include("../../Balloon_Model/BalloonModel.jl")
 include("$InDATADIR/getData.jl")
 
-Run_vec = LinRange(1,10,10)
-plot_fit = "true"
-save_data = "false"
+Run_vec = LinRange(1,20,20)
+plot_fit = "false"
+save_data = "true"
 
 # constants 
 N = 139
 u0 = zeros(8*N)
 NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
+
 u0[:] = makeInitConds(NGp,N)
 for jj = 1:length(Run_vec)
 stimNodes = [39]
@@ -42,10 +43,10 @@ NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
 nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
 Run = string(Int(round(Run_vec[jj])))
-nWindows = 16
+nWindows = 22
 tWindows = 300.0
-stimOpt = "on"
-stimWindow = 2
+stimOpt = "off"
+stimWindow = 5
 adapt = "on"
 synapses = "1stOrder"
 

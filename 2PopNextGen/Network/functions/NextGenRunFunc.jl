@@ -4,6 +4,9 @@ function NGModelRun(NGp,bP,nP,κS,opts,u0)
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)
+    BOLD_saveat = collect(0:1.6:tWindows)
+    size_out = length(BOLD_saveat)
+    BOLD_out = zeros(N,size_out,nWindows)
     
    
    
@@ -21,11 +24,8 @@ function NGModelRun(NGp,bP,nP,κS,opts,u0)
             global vP = variousPars(0.0, 100.0,0)
             global aP = adaptParams(100.01,u0[1:N])
             hparams = u0
-            BOLD_saveat = collect(15:1.6:tWindows)
-            size_out = length(BOLD_saveat)
-            BOLD_out = zeros(N,size_out,nWindows)
+          
         else
-            
             u0 = sol[:,end]
             iStart = findfirst(sol.t .> tWindows - 1.1)
             rE0 = sol[1:N,:]
@@ -34,9 +34,7 @@ function NGModelRun(NGp,bP,nP,κS,opts,u0)
             vP = variousPars(0.0, 0.01,0)
             aP.tP = 0.01
             println(size(aP.HIST))
-            BOLD_saveat = collect(15:1.6:tWindows)
-            size_out = length(BOLD_saveat)
-            BOLD_out = zeros(N,size_out,nWindows)
+         
         end
         
         tspan = (0.0,tWindows)
