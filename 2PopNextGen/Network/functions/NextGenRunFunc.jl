@@ -1,4 +1,4 @@
-function NGModelRun(NGp,bP,nP,κS,opts,u0)
+function NGModelRun(NGp,LR,bP,nP,κS,opts,u0)
    @unpack W, dist,lags,N,minSC,W_sum = nP
    @unpack stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows = opts
     
@@ -42,7 +42,7 @@ function NGModelRun(NGp,bP,nP,κS,opts,u0)
         clags = cat(unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0]))),1.0,dims=1)
         println(clags)
     
-        global p = (NGp,nP,vP,aP,κS,hparams,j,opts)
+        global p = (NGp,LR,nP,vP,aP,κS,hparams,j,opts)
 
         if opts.synapses == "1stOrder"
             probDDE = NextGen
