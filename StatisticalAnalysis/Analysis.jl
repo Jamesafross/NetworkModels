@@ -6,7 +6,7 @@ INDATADIR = "$HOMEDIR/NetworkModels_Data/2PopNextGen_Data/"
 OutDATADIR = "$HOMEDIR/NetworkModels_Data/Rcode_Data/2PopNextGen_Data"
 
 
-nWindows = 16
+nWindows = 22
 
 
 
@@ -50,7 +50,7 @@ for i = 1:step_i:size(BOLD,2)
     end
 end
 
-runs=10
+runs=1
 counter = 1
 TYPE = "r"
 
