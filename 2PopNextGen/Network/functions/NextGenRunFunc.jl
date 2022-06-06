@@ -1,4 +1,4 @@
-function NGModelRun(NGp,LR,bP,nP,κS,opts,u0)
+function NGModelRun(NGp,LR,bP,nP,κS,wS,opts,u0)
    @unpack W, dist,lags,N,minSC,W_sum = nP
    @unpack stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows = opts
     
@@ -42,7 +42,7 @@ function NGModelRun(NGp,LR,bP,nP,κS,opts,u0)
         clags = cat(unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0]))),1.0,dims=1)
         println(clags)
     
-        global p = (NGp,LR,nP,vP,aP,κS,hparams,j,opts)
+        global p = (NGp,LR,nP,vP,aP,κS,wS,hparams,j,opts)
 
         if opts.synapses == "1stOrder"
             probDDE = NextGen
@@ -79,23 +79,16 @@ function NGModelRun(NGp,LR,bP,nP,κS,opts,u0)
             b0 = endBM
         end
        
-         global out,endBM = runBalloon(b0,balloonParams,tspanB,BOLD_saveat,N)
+        global out,endBM = runBalloon(b0,balloonParams,tspanB,BOLD_saveat,N)
         
-        out_trans=(out')    
+          
 
-        for n=1:N
-            for m=n+1:N
-                R[n,m,j]=(cor(out_trans[:,m],out_trans[:,n]))
-                R[m,n,j]=R[n,m,j];
-            end
-        end
-
-        Wsave[:,:,j] = nP.W
+       
         BOLD_out[:,:,j] = out
 
     end
 
-    return R,Wsave,BOLD_out
+    return BOLD_out,wS
 
 
 end

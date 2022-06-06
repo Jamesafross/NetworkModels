@@ -3,14 +3,13 @@
 # solver                        #
 #################################
 function NextGen(du,u,h,p,t)
-    NGp,LR,nP,vP,aP,κS,hparams,nWindow,opts = p
+    NGp,LR,nP,vP,aP,κS,wS,hparams,nWindow,opts = p
     
 
 
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
     κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
     @unpack κSEEv,κSIEv,κSEIv,κSIIv,κSUM = κS
-
     @unpack tPrev,timeAdapt,count = vP
     @unpack stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows = opts
     @unpack W,dist,lags,N,minSC,W_sum = nP
@@ -47,6 +46,12 @@ function NextGen(du,u,h,p,t)
         #end
         κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,NGp,rE,rI,i,N,LR)
         if i == N
+            if mod(vP.count,10) == 0
+                wS.κSEEv = cat(wS.κSEEv,κS.κSEEv,dims=2)
+                wS.κSIEv = cat(wS.κSIEv,κS.κSIEv,dims=2)
+                wS.κSEIv = cat(wS.κSEIv,κS.κSEIv,dims=2)
+                wS.κSIIv = cat(wS.κSIIv,κS.κSIIv,dims=2)
+            end
             #nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
             aP.tP += 0.01  
             aP.tP = round(aP.tP,digits=2)

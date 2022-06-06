@@ -19,6 +19,7 @@ u0 = zeros(8*N)
 NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
 LR = 0.00001 # learning rate adaptation
 u0[:] = makeInitConds(NGp,N)
+
 for jj = 1:length(Run_vec)
 
     for setstim = ["on","off"]
@@ -62,11 +63,12 @@ for jj = 1:length(Run_vec)
     κSIIv = ones(N)*NGp.κSII
     κSUM = κSEEv[1]+κSIEv[1]+κSEIv[1]+κSIIv[1]
     κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
+    wS = weightsSave(κSEEv, κSIEv, κSEIv, κSIIv)
     bP = ballonModelParameters()
     opts=solverOpts(stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows)
 
     println("Running model ... ")
-    @time Rsave,Wsave,out = NGModelRun(NGp,LR,bP,nP,κS,opts,u0)
+    @time out,weights = NGModelRun(NGp,LR,bP,nP,κS,wS,opts,u0)
 
     BOLD_OUT=[]
     for ii = 1:nWindows
@@ -104,8 +106,7 @@ for jj = 1:length(Run_vec)
     end
 
     fitAll = [[fit],[fit2],[fit_stim],[fit2_stim]]
-    dataSave = dataStruct(Rsave,fitAll,Wsave)
-
+  
     if stimOpt == "on"
         save1 = "stim"
     else
@@ -130,9 +131,11 @@ for jj = 1:length(Run_vec)
     println(fit)
 
     if save_data =="true"
-        save("$OutDATADIR/$savedir/dataSave_$savename.jld","data_save_$savename",dataSave)
+        
         save("$OutDATADIR/$savedir/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)
+        save("$OutDATADIR/$savedir/weights_$savename.jld","weights_$savename",weights)
     end
+
 
     end
 

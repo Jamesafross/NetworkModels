@@ -38,15 +38,17 @@ end
 counterT = 1
 buffer = 100
 LR = 0.00001
+stimStr = 10.
 dir0 = "LR_"
 dir1 = string(LR)
-dir2 = "_Run_1"
-savedir = dir0*dir1*dir2
+dir2 = "_StimStr_"
+dir3 = string(stimStr)
+savedir = dir0*dir1*dir2*dir3
 
 BOLD = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
 
 step_i = 5
-step_j = 100
+step_j = 60
 for i = 1:step_i:size(BOLD,2)
     j = i + step_j
     if j < size(BOLD,2)
@@ -92,7 +94,7 @@ end
     p1 = heatmap(FCstim[:,:,i].^2,c=:jet,title=t)
     p2 = heatmap(FCnostim[:,:,i].^2,c=:jet,title=t)
     p3 = heatmap(abs.(FCstim[:,:,i].^2 .-FCnostim[:,:,i].^2),c=:jet,title=t)
-    plot(p1,p2,p3)
+    plot(p1,p2,p3,title=i)
 end
     
 

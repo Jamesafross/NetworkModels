@@ -145,3 +145,10 @@ end
     VsynII::R = -5.
     κ::R=0.5
  end
+
+ mutable struct weightSave
+    κSEEv
+    κSIEv
+    κSEIv
+    κSIIv
+ end
