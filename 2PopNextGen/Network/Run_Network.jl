@@ -78,6 +78,18 @@ for jj = 1:length(Run_vec)
             BOLD_OUT = cat(BOLD_OUT,out[:,:,ii],dims=2)
         end
     end
+
+
+    if stimOpt == "on"
+        save1 = "stim"
+    else
+        save1="NOstim"
+    end
+    if adapt == "on"
+        save2 = "Adaptivity"
+    else
+        save2="NOadaptivity"
+    end
     
 
     savename = save1*save2
