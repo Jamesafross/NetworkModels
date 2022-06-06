@@ -48,7 +48,7 @@ for jj = 1:length(Run_vec)
 
     Run = string(Int(round(Run_vec[jj])))
     nWindows = 22
-    tWindows = 300.0
+    tWindows = 100.0
     stimOpt = setstim
     stimStr = 5.
     stimWindow = 5
@@ -78,45 +78,7 @@ for jj = 1:length(Run_vec)
             BOLD_OUT = cat(BOLD_OUT,out[:,:,ii],dims=2)
         end
     end
-    FC_Array_stim= getFCstim_nonaverages()
-
-    PaulFCmean_stim = mean(FC_Array_stim,dims=3)[:,:]
-
-    fit = zeros(nWindows)
-    fit2 = zeros(nWindows)
-
-    fit_stim = zeros(nWindows)
-    fit2_stim=zeros(nWindows)
-
-    fitt,bestIdxs = findBestFit(Rsave[:,:,1],FC_Array)
-
-    fitt,bestIdxs2 = findBestFit(Rsave[:,:,1].^2,FC_Array.^2)
-
-    fitt,bestIdxs_stim = findBestFit(Rsave[:,:,1],FC_Array_stim)
-
-    fitt,bestIdxs2_stim = findBestFit(Rsave[:,:,1].^2,FC_Array_stim.^2)
-
-
-    for i = 1:nWindows
-
-        fit[i] = fitR(Rsave[:,:,i],mean(FC_Array[:,:,bestIdxs],dims=3))
-        fit2[i] = fitR(Rsave[:,:,i].^2,mean(FC_Array[:,:,bestIdxs2].^2,dims=3))
-        fit_stim[i] = fitR(Rsave[:,:,i],mean(FC_Array_stim[:,:,bestIdxs_stim],dims=3))
-        fit2_stim[i] = fitR(Rsave[:,:,i].^2,mean(FC_Array_stim[:,:,bestIdxs2_stim].^2,dims=3))
-    end
-
-    fitAll = [[fit],[fit2],[fit_stim],[fit2_stim]]
-  
-    if stimOpt == "on"
-        save1 = "stim"
-    else
-        save1="NOstim"
-    end
-    if adapt == "on"
-        save2 = "Adaptivity"
-    else
-        save2="NOadaptivity"
-    end
+    
 
     savename = save1*save2
     dir0 = "LR_"
@@ -131,7 +93,6 @@ for jj = 1:length(Run_vec)
     println(fit)
 
     if save_data =="true"
-        
         save("$OutDATADIR/$savedir/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)
         save("$OutDATADIR/$savedir/weights_$savename.jld","weights_$savename",weightSaved)
     end
@@ -141,18 +102,3 @@ for jj = 1:length(Run_vec)
 
 end
 
-
-if plot_fit == "true"
-scatter(collect(1:1:nWindows),fit,label="FC fit ")
-
-scatter!(collect(1:1:nWindows),fit2,label="FC fit2 ")
-
-scatter!(collect(1:1:nWindows),fit_stim,label="FC stim fit ")
-scatter!(collect(1:1:nWindows),fit2_stim,label="FC stim fit2 ")
-
-plot!(collect(1:1:nWindows),fit,label="FC fit ")
-plot!(collect(1:1:nWindows),fit2,label="FC fit2 ")
-plot!(collect(1:1:nWindows),fit_stim,label="FC stim fit ")
-
-scatterplot1 =  plot!(collect(1:1:nWindows),fit2_stim,label="FC stim fit2 ")
-end
