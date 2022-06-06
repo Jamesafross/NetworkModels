@@ -1,6 +1,6 @@
 function NGModelRun(NGp,LR,bP,nP,κS,opts,u0)
    @unpack W, dist,lags,N,minSC,W_sum = nP
-   @unpack stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows = opts
+   @unpack stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows = opts
     
     R = zeros(N,N,nWindows)
     Wsave = zeros(N,N,nWindows)

@@ -49,6 +49,7 @@ for jj = 1:length(Run_vec)
     nWindows = 22
     tWindows = 300.0
     stimOpt = setstim
+    stimSri = 5.
     stimWindow = 5
     adapt = "on"
     synapses = "1stOrder"
@@ -62,7 +63,7 @@ for jj = 1:length(Run_vec)
     κSUM = κSEEv[1]+κSIEv[1]+κSEIv[1]+κSIIv[1]
     κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
     bP = ballonModelParameters()
-    opts=solverOpts(stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows)
+    opts=solverOpts(stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows)
 
     println("Running model ... ")
     @time Rsave,Wsave,out = NGModelRun(NGp,LR,bP,nP,κS,opts,u0)
@@ -119,16 +120,18 @@ for jj = 1:length(Run_vec)
     savename = save1*save2
     dir0 = "LR_"
     dir1 = string(LR)
-    dir2 = "_Run_$Run"
-    savedir = dir0*dir1*dir2
+    dir2 = "_StimStr_"
+    dir3 = string(stimStr)
+
+    savedir = dir0*dir1*dir2*dir3
 
     
 
     println(fit)
 
     if save_data =="true"
-        save("$OutDATADIR/Run_$Run/dataSave_$savename.jld","data_save_$savename",dataSave)
-        save("$OutDATADIR/Run_$Run/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)
+        save("$OutDATADIR/$savedir/dataSave_$savename.jld","data_save_$savename",dataSave)
+        save("$OutDATADIR/$savedir/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)
     end
 
     end

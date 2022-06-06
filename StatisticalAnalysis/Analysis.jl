@@ -37,7 +37,13 @@ end
 
 counterT = 1
 buffer = 100
-BOLD = load("$INDATADIR/Run_1/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
+LR = 0.00001
+dir0 = "LR_"
+dir1 = string(LR)
+dir2 = "_Run_1"
+savedir = dir0*dir1*dir2
+
+BOLD = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
 
 step_i = 5
 step_j = 100
@@ -58,10 +64,11 @@ TYPE = "r"
 
 global FCstim = zeros(139,139,counterT) 
 global FCnostim = zeros(139,139,counterT) 
-for ii = 1:runs
 
-    BOLDstim = load("$INDATADIR/Run_$ii/BOLD_stimAdaptivity.jld","BOLD_stimAdaptivity")[:,buffer:end]
-    BOLDnostim = load("$INDATADIR/Run_$ii/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
+for ii = 1
+
+    BOLDstim = load("$INDATADIR/$savedir/BOLD_stimAdaptivity.jld","BOLD_stimAdaptivity")[:,buffer:end]
+    BOLDnostim = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
 
     
     counter = 1

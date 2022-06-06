@@ -12,7 +12,7 @@ function NextGen(du,u,h,p,t)
     @unpack κSEEv,κSIEv,κSEIv,κSIIv,κSUM = κS
 
     @unpack tPrev,timeAdapt,count = vP
-    @unpack stimOpt,stimWindow,stimNodes,Tstim,adapt,synapses,tWindows,nWindows = opts
+    @unpack stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows = opts
     @unpack W,dist,lags,N,minSC,W_sum = nP
     @unpack tP,HIST = aP 
      
@@ -61,7 +61,7 @@ function NextGen(du,u,h,p,t)
         #rI
         du[i+N] =(1. /τI)*(-gIE*rI - gII*rI -κVIE*rI - κVII*rI + 2. * rI * vI + (ΔI / (τI*pi)))
         #vE
-        du[i+2N] =(1. /τE)*(gEE*(VsynEE - vE) + gEI*(VsynEI - vI) + κVEI*(vI - vE) - (τE^2)*(pi^2) * (rE^2.) +  vE^2. + η_0E +stim(t,i,stimNodes,Tstim,nWindow,stimOpt,stimWindow))
+        du[i+2N] =(1. /τE)*(gEE*(VsynEE - vE) + gEI*(VsynEI - vI) + κVEI*(vI - vE) - (τE^2)*(pi^2) * (rE^2.) +  vE^2. + η_0E +stim(t,i,stimNodes,Tstim,nWindow,stimOpt,stimWindow,stimStr))
         #vI
         du[i+3N] =(1. /τI)*(gIE*(VsynIE - vE) + gII*(VsynII - vI) + κVIE*(vE - vI) - (τI^2)*(pi^2)* (rI^2.) + vI^2. + η_0I)
         #gEE
