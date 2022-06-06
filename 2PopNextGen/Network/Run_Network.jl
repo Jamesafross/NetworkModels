@@ -68,7 +68,7 @@ for jj = 1:length(Run_vec)
     opts=solverOpts(stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows)
 
     println("Running model ... ")
-    @time out,weightSave= NGModelRun(NGp,LR,bP,nP,κS,wS,opts,u0)
+    @time out,weightSaved = NGModelRun(NGp,LR,bP,nP,κS,wS,opts,u0)
 
     BOLD_OUT=[]
     for ii = 1:nWindows
@@ -133,7 +133,7 @@ for jj = 1:length(Run_vec)
     if save_data =="true"
         
         save("$OutDATADIR/$savedir/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)
-        save("$OutDATADIR/$savedir/weights_$savename.jld","weights_$savename",weightSave)
+        save("$OutDATADIR/$savedir/weights_$savename.jld","weights_$savename",weightSaved)
     end
 
 
