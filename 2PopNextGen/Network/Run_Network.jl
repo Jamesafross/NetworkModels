@@ -63,12 +63,12 @@ for jj = 1:length(Run_vec)
     κSIIv = ones(N)*NGp.κSII
     κSUM = κSEEv[1]+κSIEv[1]+κSEIv[1]+κSIIv[1]
     κS = weights(κSEEv, κSIEv, κSEIv, κSIIv, κSUM )
-    wS = weightsSave(κSEEv, κSIEv, κSEIv, κSIIv)
+    wS = weightSave(κSEEv, κSIEv, κSEIv, κSIIv)
     bP = ballonModelParameters()
     opts=solverOpts(stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows)
 
     println("Running model ... ")
-    @time out,weights = NGModelRun(NGp,LR,bP,nP,κS,wS,opts,u0)
+    @time out,weightSave= NGModelRun(NGp,LR,bP,nP,κS,wS,opts,u0)
 
     BOLD_OUT=[]
     for ii = 1:nWindows
@@ -133,7 +133,7 @@ for jj = 1:length(Run_vec)
     if save_data =="true"
         
         save("$OutDATADIR/$savedir/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)
-        save("$OutDATADIR/$savedir/weights_$savename.jld","weights_$savename",weights)
+        save("$OutDATADIR/$savedir/weights_$savename.jld","weights_$savename",weightSave)
     end
 
 
