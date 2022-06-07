@@ -102,7 +102,7 @@ for jj = 1:length(Run_vec)
 
     
 
-    println(fit)
+   
 
     if save_data =="true"
         save("$OutDATADIR/$savedir/BOLD_$savename.jld","BOLD_$savename",BOLD_OUT)

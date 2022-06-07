@@ -37,8 +37,8 @@ end
 
 counterT = 1
 buffer = 100
-LR = 0.00001
-stimStr = 10.
+LR = 0.00005
+stimStr = -10.
 dir0 = "LR_"
 dir1 = string(LR)
 dir2 = "_StimStr_"
@@ -47,7 +47,7 @@ savedir = dir0*dir1*dir2*dir3
 
 BOLD = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
 
-step_i = 5
+step_i = 4
 step_j = 60
 for i = 1:step_i:size(BOLD,2)
     j = i + step_j
@@ -88,17 +88,20 @@ for ii = 1
     end
 end
 
+weights_stim = load("$INDATADIR/$savedir/weights_stimAdaptivity.jld","weights_stimAdaptivity")
+
+weights_nostim = load("$INDATADIR/$savedir/weights_NOstimAdaptivity.jld","weights_NOstimAdaptivity")
+
+
 
 @gif for i = 1:1:counterT
-    t = 160 + round((i-1)*1.6,digits=2) + step_j*1.6
+    t = buffer*1.6 + round((i-1)*1.6*2,digits=2) + step_j*1.6 
     p1 = heatmap(FCstim[:,:,i].^2,c=:jet,title=t)
     p2 = heatmap(FCnostim[:,:,i].^2,c=:jet,title=t)
     p3 = heatmap(abs.(FCstim[:,:,i].^2 .-FCnostim[:,:,i].^2),c=:jet,title=t)
-    plot(p1,p2,p3,title=i)
+    plot(p1,p2,p3)
 end
     
-
-
 
 
 
