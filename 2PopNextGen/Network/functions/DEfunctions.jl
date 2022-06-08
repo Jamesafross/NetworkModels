@@ -46,6 +46,7 @@ function NextGen(du,u,h,p,t)
         #end
         κS.κSEEv[i],κS.κSIEv[i],κS.κSEIv[i],κS.κSIIv[i] = adapt_local_func(h,hparams,t,κS,NGp,rE,rI,i,N,LR)
         if i == N
+            
             if mod(vP.count,10) == 0
                 wS.κSEEv = cat(wS.κSEEv,κS.κSEEv,dims=2)
                 wS.κSIEv = cat(wS.κSIEv,κS.κSIEv,dims=2)

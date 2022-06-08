@@ -35,9 +35,9 @@ function adapt_global_coupling(hparams,N::Int64,W::Matrix{Float64},lags::Matrix{
             if W[ii,jj]  > 0.0
                 if lags[ii,jj] == 0.0
                     
-                     W[ii,jj] += 0.000001*u[ii]*(u[jj] - h(hparams,t-1.0;idxs=jj))
+                     W[ii,jj] += 0.0000001*u[ii]*(u[jj] - h(hparams,t-1.0;idxs=jj))
                 else
-                     W[ii,jj] += 0.000001*h(hparams,t-lags[ii,jj];idxs=ii)*(u[jj] - h(hparams,t-1.0;idxs=jj))
+                     W[ii,jj] += 0.0000001*h(hparams,t-lags[ii,jj];idxs=ii)*(u[jj] - h(hparams,t-1.0;idxs=jj))
                 end
                 if W[jj,ii] < minSC
                     W[jj,ii] = minSC
@@ -105,38 +105,47 @@ function getHistMat(HISTMAT,h,u,hparams,lags,t,N)
 end
 
 
-function adapt_local_func(h,hparams,t,κS,NGp,rE,rI,i,N,c)
+function adapt_local_func(h,hparams,t,κS,NGp,rE,rI,i,N,c;type = "lim")
         @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
         κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
         @unpack κSEEv,κSIEv,κSEIv,κSIIv,κSUM = κS
-        κSEEv[i] += c*rE*(rE - h(hparams,t-1.0;idxs = i))
-        κSIEv[i] += c*rI*(rE - h(hparams,t-1.0;idxs = i))
-        κSEIv[i] += c*rE*(rI - h(hparams,t-1.0;idxs = i+N))
-        κSIIv[i] += c*rI*(rI - h(hparams,t-1.0;idxs = i+N))
+        
+        κSEEv[i] = (κSEEv[i] + c*rE*(rE - h(hparams,t-1.0;idxs = i)))
+        κSIEv[i] = (κSIEv[i] + c*rE*(rI - h(hparams,t-1.0;idxs = i+N)))
+        κSEIv[i] = (κSEIv[i] + c*rI*(rE - h(hparams,t-1.0;idxs = i)))
+        κSIIv[i] = (κSIIv[i] + c*rI*(rI - h(hparams,t-1.0;idxs = i+N)))
+        
+        limEE = 0.2
+        limEI = 0.2
+        limIE = 0.2
+        limII = 0.2
 
-        #κSEEv[i], κSIEv[i],κSEIv[i], κSIIv[i] = κSUM*[κSEEv[i], κSIEv[i], κSEIv[i], κSIIv[i]]/(κSEEv[i] + κSIEv[i] + κSEIv[i] + κSIIv[i])
-        if κSEEv[i]  > κSEE + 0.2
-            κSEEv[i] = κSEE + 0.2
-        elseif κSEEv[i]  < κSEE - 0.2
-            κSEEv[i] = κSEE - 0.2
-        end
+        if type == "lim"
+            if κSEEv[i]  > κSEE + limEE
+                κSEEv[i] = κSEE + limEE
+            elseif κSEEv[i]  < κSEE - limEE
+                κSEEv[i] = κSEE - limEE
+            end
 
-        if κSEIv[i]  > κSEI + 0.2
-            κSEIv[i] = κSEI + 0.2
-        elseif κSEIv[i]  < κSEI - 0.2
-            κSEIv[i] = κSEI - 0.2
-        end
+            if κSEIv[i]  > κSEI + limEI
+                κSEIv[i] = κSEI + limEI
+            elseif κSEIv[i]  < κSEI - limEI
+                κSEIv[i] = κSEI - limEI
+            end
 
-        if κSIEv[i]  > κSIE + 0.2
-            κSIEv[i] = κSIE + 0.2
-        elseif κSIEv[i]  < κSIE - 0.2
-            κSIEv[i] = κSIE - 0.2
-        end
+            if κSIEv[i]  > κSIE + limIE
+                κSIEv[i] = κSIE + limIE
+            elseif κSIEv[i]  < κSIE - limIE
+                κSIEv[i] = κSIE - limIE
+            end
 
-        if κSIIv[i]  > κSII + 0.2
-            κSIIv[i] = κSII + 0.2
-        elseif κSIIv[i]  < κSII - 0.2
-            κSIIv[i] = κSII - 0.2
+            if κSIIv[i]  > κSII + limII
+                κSIIv[i] = κSII + limII
+            elseif κSIIv[i]  < κSII - limII
+                κSIIv[i] = κSII - limII
+            end
+        elseif type == "normalised"
+            κSEEv[i], κSIEv[i],κSEIv[i], κSIIv[i] = κSUM*[κSEEv[i], κSIEv[i], κSEIv[i], κSIIv[i]]/(κSEEv[i] + κSIEv[i] + κSEIv[i] + κSIIv[i])
         end
 
     return κSEEv[i],κSIEv[i],κSEIv[i],κSIIv[i]

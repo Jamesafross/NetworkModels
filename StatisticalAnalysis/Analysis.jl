@@ -1,12 +1,12 @@
 using JLD
-using DelimitedFiles,Statistics,Plots,Hilbert
+using DelimitedFiles,Statistics,Plots
 
 HOMEDIR = homedir()
 INDATADIR = "$HOMEDIR/NetworkModels_Data/2PopNextGen_Data/"
 OutDATADIR = "$HOMEDIR/NetworkModels_Data/Rcode_Data/2PopNextGen_Data"
 
 
-nWindows = 22
+nWindows = 50
 
 
 
@@ -37,8 +37,8 @@ end
 
 counterT = 1
 buffer = 100
-LR = 0.00005
-stimStr = -10.
+LR = 0.1
+stimStr = -5.
 dir0 = "LR_"
 dir1 = string(LR)
 dir2 = "_StimStr_"
@@ -101,6 +101,33 @@ weights_nostim = load("$INDATADIR/$savedir/weights_NOstimAdaptivity.jld","weight
     p3 = heatmap(abs.(FCstim[:,:,i].^2 .-FCnostim[:,:,i].^2),c=:jet,title=t)
     plot(p1,p2,p3)
 end
+
+FCstim_rv = []
+FCnostim_rv = []
+buff = 20
+for i = buff+1:size(FCstim,3)
+    j = i+buff
+    jj = i-buff
+    
+    if j < size(FCstim,3)
+        if i == buff+1
+            FCstim_rv = mean(FCstim[:,:,jj:j],dims=3)
+            FCnostim_rv = mean(FCnostim[:,:,jj:j],dims=3)
+        else
+            FCstim_rv = cat(FCstim_rv,mean(FCstim[:,:,jj:j],dims=3),dims=3)
+            FCnostim_rv = cat(FCnostim_rv,mean(FCnostim[:,:,jj:j],dims=3),dims=3)
+        end
+    end
+end
+
+@gif for i = 1:1:size(FCstim_rv,3)
+    t = buffer*1.6 + round((i-1)*1.6*2,digits=2) + step_j*1.6 
+    p1 = heatmap(FCstim_rv[:,:,i].^2,c=:jet,title=t)
+    p2 = heatmap(FCnostim_rv[:,:,i].^2,c=:jet,title=t)
+    p3 = heatmap(abs.(FCstim_rv[:,:,i].^2 .-FCnostim_rv[:,:,i].^2),c=:jet,title=t)
+    plot(p1,p2,p3)
+end
+
     
 
 

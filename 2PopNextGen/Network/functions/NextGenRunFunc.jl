@@ -36,7 +36,12 @@ function NGModelRun(NGp,LR,bP,nP,κS,wS,opts,u0)
             println(size(aP.HIST))
          
         end
-        
+
+        if j < 5
+            opts.adapt = "off"
+        else
+            opts.adapt = "on"
+        end
         tspan = (0.0,tWindows)
         adpStops = collect(0.01:0.01:tWindows)
         clags = cat(unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0]))),1.0,dims=1)

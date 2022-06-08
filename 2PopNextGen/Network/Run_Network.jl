@@ -17,7 +17,7 @@ save_data = "true"
 N = 139
 u0 = zeros(8*N)
 NGp = NextGen2PopParams2(η_0E = -14.19,κ=0.505)
-LR = 0.00001 # learning rate adaptation
+LR = 0.01 # learning rate adaptation
 u0[:] = makeInitConds(NGp,N)
 
 for jj = 1:length(Run_vec)
@@ -47,11 +47,11 @@ for jj = 1:length(Run_vec)
     nP = networkParameters(W, dist,lags, N,minSC,W_sum)
 
     Run = string(Int(round(Run_vec[jj])))
-    nWindows = 22
+    nWindows = 40
     tWindows = 100.0
     stimOpt = setstim
-    stimStr = 5.
-    stimWindow = 5
+    stimStr = -5.
+    stimWindow = 20
     adapt = "on"
     synapses = "1stOrder"
 
@@ -73,7 +73,7 @@ for jj = 1:length(Run_vec)
     BOLD_OUT=[]
     for ii = 1:nWindows
         if ii == 1
-            BOLD_OUT = out[:,:,ii]
+            BOLD_OUT= out[:,:,ii]
         else
             BOLD_OUT = cat(BOLD_OUT,out[:,:,ii],dims=2)
         end
