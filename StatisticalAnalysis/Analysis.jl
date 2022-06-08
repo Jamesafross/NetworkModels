@@ -6,9 +6,6 @@ INDATADIR = "$HOMEDIR/NetworkModels_Data/2PopNextGen_Data/"
 OutDATADIR = "$HOMEDIR/NetworkModels_Data/Rcode_Data/2PopNextGen_Data"
 
 
-nWindows = 50
-
-
 
 function getFCwindows(SIG;type="r")
     FC = zeros(139,139)
@@ -47,8 +44,8 @@ savedir = dir0*dir1*dir2*dir3
 
 BOLD = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
 
-step_i = 4
-step_j = 60
+step_i = 10
+step_j = 300
 for i = 1:step_i:size(BOLD,2)
     j = i + step_j
     if j < size(BOLD,2)
@@ -94,43 +91,56 @@ weights_nostim = load("$INDATADIR/$savedir/weights_NOstimAdaptivity.jld","weight
 
 
 
-@gif for i = 1:1:counterT
+anim1 = @animate for i = 1:1:counterT
     t = buffer*1.6 + round((i-1)*1.6*2,digits=2) + step_j*1.6 
     p1 = heatmap(FCstim[:,:,i].^2,c=:jet,title=t)
     p2 = heatmap(FCnostim[:,:,i].^2,c=:jet,title=t)
     p3 = heatmap(abs.(FCstim[:,:,i].^2 .-FCnostim[:,:,i].^2),c=:jet,title=t)
-    plot(p1,p2,p3)
+    plot(p1,p2,p3,title=i)
+end
+
+anim2 = @animate for i = 1:1:counterT
+    t = buffer*1.6 + round((i-1)*1.6*2,digits=2) + step_j*1.6 
+    p1 = heatmap(FCstim[:,:,i],c=:jet,title=t)
+    p2 = heatmap(FCnostim[:,:,i],c=:jet,title=t)
+    p3 = heatmap(abs.(FCstim[:,:,i] .-FCnostim[:,:,i]),c=:jet,title=t)
+    plot(p1,p2,p3,title=i)
 end
 
 FCstim_rv = []
 FCnostim_rv = []
+rv=0
 buff = 20
-for i = buff+1:size(FCstim,3)
-    j = i+buff
-    jj = i-buff
-    
-    if j < size(FCstim,3)
-        if i == buff+1
-            FCstim_rv = mean(FCstim[:,:,jj:j],dims=3)
-            FCnostim_rv = mean(FCnostim[:,:,jj:j],dims=3)
-        else
-            FCstim_rv = cat(FCstim_rv,mean(FCstim[:,:,jj:j],dims=3),dims=3)
-            FCnostim_rv = cat(FCnostim_rv,mean(FCnostim[:,:,jj:j],dims=3),dims=3)
+if rv == 1
+    for i = buff+1:size(FCstim,3)
+        j = i+buff
+        jj = i-buff
+        
+        if j < size(FCstim,3)
+            if i == buff+1
+                FCstim_rv = mean(FCstim[:,:,jj:j],dims=3)
+                FCnostim_rv = mean(FCnostim[:,:,jj:j],dims=3)
+            else
+                FCstim_rv = cat(FCstim_rv,mean(FCstim[:,:,jj:j],dims=3),dims=3)
+                FCnostim_rv = cat(FCnostim_rv,mean(FCnostim[:,:,jj:j],dims=3),dims=3)
+            end
         end
+    end
+
+    anim2 = @animate for i = 1:1:size(FCstim_rv,3)
+        t = buffer*1.6 + round((i-1)*1.6*2,digits=2) + step_j*1.6 
+        p1 = heatmap(FCstim_rv[:,:,i].^2,c=:jet,title=t)
+        p2 = heatmap(FCnostim_rv[:,:,i].^2,c=:jet,title=t)
+        p3 = heatmap(abs.(FCstim_rv[:,:,i].^2 .-FCnostim_rv[:,:,i].^2),c=:jet,title=t)
+        plot(p1,p2,p3)
     end
 end
 
-@gif for i = 1:1:size(FCstim_rv,3)
-    t = buffer*1.6 + round((i-1)*1.6*2,digits=2) + step_j*1.6 
-    p1 = heatmap(FCstim_rv[:,:,i].^2,c=:jet,title=t)
-    p2 = heatmap(FCnostim_rv[:,:,i].^2,c=:jet,title=t)
-    p3 = heatmap(abs.(FCstim_rv[:,:,i].^2 .-FCnostim_rv[:,:,i].^2),c=:jet,title=t)
-    plot(p1,p2,p3)
-end
-
-    
 
 
+
+
+gif(anim1,"anim1.gif",fps=10)
 
 
 
