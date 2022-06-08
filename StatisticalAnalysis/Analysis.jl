@@ -37,7 +37,7 @@ end
 
 counterT = 1
 buffer = 100
-LR = 0.1
+LR = 0.01
 stimStr = -5.
 dir0 = "LR_"
 dir1 = string(LR)

@@ -53,7 +53,7 @@ function NextGen(du,u,h,p,t)
                 wS.κSEIv = cat(wS.κSEIv,κS.κSEIv,dims=2)
                 wS.κSIIv = cat(wS.κSIIv,κS.κSIIv,dims=2)
             end
-            #nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
+            nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
             aP.tP += 0.01  
             aP.tP = round(aP.tP,digits=2)
             vP.count += 1
