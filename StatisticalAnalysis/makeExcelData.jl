@@ -1,8 +1,10 @@
 using JLD
-using DelimitedFiles,Statistics,Plots
+using DelimitedFiles,Statistics,Plots,XLSX
 
 HOMEDIR = homedir()
-INDATADIR = "$HOMEDIR/NetworkModels_Data/2PopNextGen_Data/"
+WORKDIR = "$HOMEDIR/NetworkModels/StatisticalAnalysis"
+
+INDATADIR = "$HOMEDIR/NetworkModels_Data/2PopNextGen_Data"
 OutDATADIR = "$HOMEDIR/NetworkModels_Data/Rcode_Data/2PopNextGen_Data"
 
 
@@ -49,3 +51,44 @@ BOLD_nostim = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimA
 diffBold = BOLD_stim .- BOLD_nostim
 
 stimIdx = findfirst(x->x>0,diffBold)[2]
+
+BOLD_stim = BOLD_stim[:,stimIdx:end]
+BOLD_nostim = BOLD_nostim[:,stimIdx:end]
+size1 = size(BOLD_stim,2)
+
+time = collect(0:1.6:size1*1.6)./60
+
+
+ROI = string.(readdlm("$WORKDIR/ROI.txt"))
+C = Matrix{String}(undef,size1,1)
+fill!(C,"Control")
+D = Matrix{String}(undef,size1,1)
+fill!(D,"FUS")
+Run = Matrix{String}(undef,size1,1)
+fill!(Run,"Run1")
+
+sub = Matrix{String}(undef,size1,1)
+fill!(sub,"Model1")
+
+touch("$WORKDIR/modelBOLD.xlsx")
+
+XLSX.openxlsx("$WORKDIR/modelBOLD.xlsx", mode="w") do xf
+    sheet = xf[1]
+    sheet["A1"] = "Suj"
+    sheet["B1"] = "Group"
+    sheet["C1"] = "Run"
+    sheet["D1"] = "Time"
+    sheet["E1:EM1"] = ROI
+    sheet["D2",dim=1] = zeros(1285)
+    sheet["C2:C$(size1+1)"] = Run
+    sheet["A2:A$(size1+1)"] = sub
+    sheet["B2:B$(size1+1)"] = C
+    sheet["E2:EM$(size1+1)"] = Matrix(BOLD_nostim[:,:]')
+
+    sheet["D1287",dim=1] = time
+    sheet["C$(size1+2):C$(2*size1+1)"] = Run
+    sheet["A$(size1+2):A$(2*size1+1)"] = sub
+    sheet["B$(size1+2):B$(2*size1+1)"] = D
+    sheet["E$(size1+2):EM$(2*size1+1)"] = Matrix(BOLD_stim[:,:]')
+
+end
