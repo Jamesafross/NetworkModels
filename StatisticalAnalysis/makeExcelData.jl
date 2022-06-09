@@ -49,3 +49,4 @@ BOLD_nostim = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimA
 diffBold = BOLD_stim .- BOLD_nostim
 
 stimIdx = findfirst(x->x>0,diffBold)[2]
+

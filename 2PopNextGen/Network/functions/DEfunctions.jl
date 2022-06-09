@@ -3,9 +3,8 @@
 # solver                        #
 #################################
 function NextGen(du,u,h,p,t)
-    NGp,LR,nP,vP,aP,κS,wS,hparams,nWindow,opts = p
-    
-
+    hparams,nWindow = p
+   
 
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
     κSII,κVEE,κVIE,κVEI,κVII,VsynEE,VsynIE,VsynEI,VsynII,κ = NGp
@@ -39,6 +38,7 @@ function NextGen(du,u,h,p,t)
         gII=u[i+7N]
 
         if  t >= tP && adapt == "on"
+            
             #println(t)
         #  aP.HIST = hcat(aP.HIST,u[1:N])
         # if size(aP.HIST,2) > 100

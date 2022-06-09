@@ -190,15 +190,14 @@ end
 
 function h1(hparams,t;idxs = nothing)
     #history function used on first window
-    u0 = hparams
         if t < 0
-        return u0[idxs]
-    end
+            return u0[idxs]
+        end
 end
 
 function h2(hparams,t;idxs = nothing)
     #history function used on windows > 1
-    u_hist= hparams
+    u_hist = hparams
         if t < 0
             return u_hist[idxs](t)
         end
@@ -282,5 +281,19 @@ function findBestFit(R,FC_Array)
     
 end
         
+function makeHistMat!(HistMat::Array{Float64},h,hparams,N,lags::Array{Float64},t::Float64)
+    for i = 1:N
+        for j = 1:N
+            if lags[i,j] > 0.0
+                HistMat[i,j] = h(hparams,t-lags[j,i]; idxs=j)
+            end
+        end
+    end
+end
+
+function make_d!(d,W,HistMat)
+    d .= sum(W.*HistMat,dims=2)
+
+end
         
 
