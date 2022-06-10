@@ -41,8 +41,9 @@ dir1 = string(LR)
 dir2 = "_StimStr_"
 dir3 = string(stimStr)
 savedir = dir0*dir1*dir2*dir3
+run = 1
 
-BOLD = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
+BOLD = load("$INDATADIR/$savedir/BOLD_NOstim_Run_$run.jld","BOLD_NOstim_Run_$run")[:,buffer:end]
 
 step_i = 10
 step_j = 300
@@ -66,8 +67,8 @@ global FCnostim = zeros(139,139,counterT)
 
 for ii = 1
 
-    BOLDstim = load("$INDATADIR/$savedir/BOLD_stimAdaptivity.jld","BOLD_stimAdaptivity")[:,buffer:end]
-    BOLDnostim = load("$INDATADIR/$savedir/BOLD_NOstimAdaptivity.jld","BOLD_NOstimAdaptivity")[:,buffer:end]
+    BOLDstim = load("$INDATADIR/$savedir/BOLD_stim_Run_$run.jld","BOLD_stim_Run_$run")[:,buffer:end]
+    BOLDnostim = load("$INDATADIR/$savedir/BOLD_NOstim_Run_$run.jld","BOLD_NOstim_Run_$run")[:,buffer:end]
 
     
     counter = 1
@@ -85,9 +86,9 @@ for ii = 1
     end
 end
 
-weights_stim = load("$INDATADIR/$savedir/weights_stimAdaptivity.jld","weights_stimAdaptivity")
+weights_stim = load("$INDATADIR/$savedir/weights_stim_Run_$run.jld","weights_stim_Run_$run")
 
-weights_nostim = load("$INDATADIR/$savedir/weights_NOstimAdaptivity.jld","weights_NOstimAdaptivity")
+weights_nostim = load("$INDATADIR/$savedir/weights_NOstim_Run_$run.jld","weights_NOstim_Run_$run")
 
 
 

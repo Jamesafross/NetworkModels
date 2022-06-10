@@ -191,7 +191,7 @@ end
 function h1(hparams,t;idxs = nothing)
     #history function used on first window
         if t < 0
-            return u0[idxs]
+            return IC.u0[idxs]
         end
 end
 

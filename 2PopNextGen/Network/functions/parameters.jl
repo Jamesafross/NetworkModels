@@ -151,4 +151,9 @@ end
     κSIEv
     κSEIv
     κSIIv
+    count
+ end
+
+ mutable struct init
+    u0
  end

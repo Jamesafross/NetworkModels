@@ -1,4 +1,4 @@
-function NGModelRun(u0,κS,wS)
+function NGModelRun(κS,wS,startAdapt)
    @unpack W, dist,lags,N,minSC,W_sum = nP
    @unpack stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows = opts
     
@@ -16,9 +16,9 @@ function NGModelRun(u0,κS,wS)
         end
 
         if j == 1
-            hparams = u0
+            hparams = IC.u0
         else
-            u0 = sol[:,end]
+            IC.u0 = sol[:,end]
             iStart = findfirst(sol.t .> tWindows - 1.1)
             rE0 = sol[1:N,:]
             u_hist = make_uhist(sol.t[iStart:end] .- sol.t[end],sol[1:2N,iStart:end])
@@ -29,7 +29,7 @@ function NGModelRun(u0,κS,wS)
             aP.tP = 0.01
         end
 
-        if j < 5
+        if j < start_adapt
             opts.adapt = "off"
         else
             opts.adapt = "on"
@@ -49,11 +49,11 @@ function NGModelRun(u0,κS,wS)
         end
 
         if j == 1
-            prob = DDEProblem(probDDE,u0, h1, tspan, p)
-            global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01,reltol=1e-3,abstol=1e-6)
+            prob = DDEProblem(probDDE,IC.u0, h1, tspan, p)
+            @time global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01,reltol=1e-3,abstol=1e-6)
         else
-            prob = DDEProblem(probDDE,u0, h2, tspan, p)
-            global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01,reltol=1e-3,abstol=1e-6)
+            prob = DDEProblem(probDDE,IC.u0, h2, tspan, p)
+            @time global sol = solve(prob,MethodOfSteps(BS3()),maxiters = 1e20,tstops=adpStops,saveat=0.01,reltol=1e-3,abstol=1e-6)
         end
         vE = sol[2N+1:3N,:]
         vI = sol[3N+1:4N,:]

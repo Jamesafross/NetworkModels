@@ -48,12 +48,13 @@ function NextGen(du,u,h,p,t)
         if i == N
             
             if mod(vP.count,10) == 0
-                wS.κSEEv = cat(wS.κSEEv,κS.κSEEv,dims=2)
-                wS.κSIEv = cat(wS.κSIEv,κS.κSIEv,dims=2)
-                wS.κSEIv = cat(wS.κSEIv,κS.κSEIv,dims=2)
-                wS.κSIIv = cat(wS.κSIIv,κS.κSIIv,dims=2)
+                #wS.κSEEv[:,wS.count] = κS.κSEEv
+                #wS.κSIEv[:,wS.count] = κS.κSIEv
+                #wS.κSEIv[:,wS.count] = κS.κSEIv
+                #wS.κSIIv[:,wS.count] = κS.κSIIv
+                wS.count += 1
             end
-            nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
+            #nP.W = adapt_global_coupling(hparams,N,W,lags,h,t,u,minSC,W_sum)
             aP.tP += 0.01  
             aP.tP = round(aP.tP,digits=2)
             vP.count += 1
