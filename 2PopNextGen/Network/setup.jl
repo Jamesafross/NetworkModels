@@ -18,7 +18,7 @@ SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
 FC_Array = FC_Array
 PaulFCmean = mean(FC_Array,dims=3)
 lags = dist./c
-lags = round.(lags,digits=3) 
+lags = round.(lags,digits=2) 
 #lags[lags.<0.003] .= 0.000
 #lags[SC .< 0.018] .= 0  
 SC = 0.01SC_Array[:,:,1]
@@ -35,14 +35,14 @@ stimNodes = [39]
 Tstim = [60,90]
 
 #load data and make struct & dist matrices
-nWindows = 10
-tWindows = 500.0
+nWindows = 40
+tWindows = 100.0
 stimOpt = "off"
 stimStr = -5.
 stimWindow = 20
 adapt = "off"
 synapses = "1stOrder"
-start_adapt = 2
+start_adapt = 5
 nSave = Int((nWindows-(start_adapt-1))*10*tWindows) + 2
 
 κSEEv = ones(N)*NGp.κSEE
@@ -62,3 +62,5 @@ const wS = weightSave(zeros(N,nSave),zeros(N,nSave),zeros(N,nSave),zeros(N,nSave
 const opts=solverOpts(stimOpt,stimWindow,stimNodes,stimStr,Tstim,adapt,synapses,tWindows,nWindows)
 const vP = variousPars(0.0, 100.0,0)
 const aP = adaptParams(10.01,IC.u0[1:N])
+const HISTMAT = zeros(N,N)
+const d = zeros(N)

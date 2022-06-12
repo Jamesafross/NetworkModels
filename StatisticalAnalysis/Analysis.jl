@@ -56,32 +56,35 @@ for i = 1:step_i:size(BOLD,2)
     end
 end
 
-runs=1
+
 counter = 1
 TYPE = "r"
-
 
 
 global FCstim = zeros(139,139,counterT) 
 global FCnostim = zeros(139,139,counterT) 
 
-for ii = 1
 
-    BOLDstim = load("$INDATADIR/$savedir/BOLD_stim_Run_$run.jld","BOLD_stim_Run_$run")[:,buffer:end]
-    BOLDnostim = load("$INDATADIR/$savedir/BOLD_NOstim_Run_$run.jld","BOLD_NOstim_Run_$run")[:,buffer:end]
+runs = [1,2,3,4,5]
+for run in runs
+    for ii = 1
 
-    
-    counter = 1
-    for i = 1:step_i:size(BOLDstim,2)
-        j = i + step_j
-        if j < size(BOLDstim,2)
-            global FCstim[:,:,counter] += getFCwindows(BOLDstim[:,i:j];type=TYPE)/runs
-            global FCnostim[:,:,counter] += getFCwindows(BOLDnostim[:,i:j];type=TYPE)/runs
-            counter += 1
-            #println(counter)
-            
-        else
-            break
+        BOLDstim = load("$INDATADIR/$savedir/BOLD_stim_Run_$run.jld","BOLD_stim_Run_$run")[:,buffer:end]
+        BOLDnostim = load("$INDATADIR/$savedir/BOLD_NOstim_Run_$run.jld","BOLD_NOstim_Run_$run")[:,buffer:end]
+
+        
+        counter = 1
+        for i = 1:step_i:size(BOLDstim,2)
+            j = i + step_j
+            if j < size(BOLDstim,2)
+                global FCstim[:,:,counter] += getFCwindows(BOLDstim[:,i:j];type=TYPE)/length(runs)
+                global FCnostim[:,:,counter] += getFCwindows(BOLDnostim[:,i:j];type=TYPE)/length(runs)
+                counter += 1
+                #println(counter)
+                
+            else
+                break
+            end
         end
     end
 end
@@ -141,7 +144,7 @@ end
 
 
 
-gif(anim1,"anim1.gif",fps=10)
+gif(anim1,"anim1.gif",fps=20)
 
 
 

@@ -5,7 +5,7 @@ Run_vec = LinRange(1,5,5)
 
 for jj = 1:length(Run_vec)
    
-   
+    IC.u0 = makeInitConds(NGp,N)  + 0.1*rand(8N)
 
     for setstim = ["on","off"]
         Run = string(Int(round(Run_vec[jj])))
@@ -65,4 +65,3 @@ for jj = 1:length(Run_vec)
     end
 
 end
-
