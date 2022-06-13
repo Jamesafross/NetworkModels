@@ -12,13 +12,14 @@ include("$InDATADIR/getData.jl")
 Run_vec = [1]
 plot_fit = "false"
 save_data = "true"
+save_matlab  = 1
 
 c=7000.
 SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
 FC_Array = FC_Array
 PaulFCmean = mean(FC_Array,dims=3)
 lags = dist./c
-lags = round.(lags,digits=2) 
+lags = round.(lags,digits=3) 
 #lags[lags.<0.003] .= 0.000
 #lags[SC .< 0.018] .= 0  
 SC = 0.01SC_Array[:,:,1]
@@ -64,3 +65,18 @@ const vP = variousPars(0.0, 100.0,0)
 const aP = adaptParams(10.01,IC.u0[1:N])
 const HISTMAT = zeros(N,N)
 const d = zeros(N)
+
+if save_matlab == 1
+    using MAT
+    file = matopen("/home/james/Matlab_Code/NextGen/DIST.mat", "w")
+    write(file, "dist", dist)
+    close(file)
+
+    file = matopen("/home/james/Matlab_Code/NextGen/SC.mat", "w")
+    write(file, "SC", SC)
+    close(file)
+
+    file = matopen("/home/james/Matlab_Code/NextGen/init.mat", "w")
+    write(file, "init0", init0)
+    close(file)
+end

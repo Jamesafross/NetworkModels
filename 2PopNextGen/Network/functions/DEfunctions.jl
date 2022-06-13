@@ -3,7 +3,7 @@
 # solver                        #
 #################################
 function NextGen(du,u,h,p,t)
-    hparams,nWindow = p
+    hparams = p
    
 
     @unpack ΔE,ΔI,η_0E,η_0I,τE,τI,αEE,αIE,αEI,αII,κSEE,κSIE,κSEI,
@@ -14,8 +14,8 @@ function NextGen(du,u,h,p,t)
     @unpack W,dist,lags,N,minSC,W_sum = nP
     @unpack tP,HIST = aP 
      
-    makeHistMat!(HISTMAT,h,hparams,N,lags,t)
-    make_d!(d,W,HISTMAT)
+    makeHistMat!(HISTMAT,h,u,hparams,N,lags,t)
+    make_d!(d,W,u,HISTMAT)
     @inbounds for i = 1:N
        
 

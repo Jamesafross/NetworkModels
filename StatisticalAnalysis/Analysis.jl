@@ -1,6 +1,12 @@
 using JLD
 using DelimitedFiles,Statistics,Plots
 
+SCFCDATADIR="$HOMEDIR/NetworkModels_Data/StructDistMatrices"
+include("$SCFCDATADIR/getData.jl")
+include("functions.jl")
+
+SC_Array,FC_Array,dist = getData_nonaveraged(;SCtype="log")
+
 HOMEDIR = homedir()
 INDATADIR = "$HOMEDIR/NetworkModels_Data/2PopNextGen_Data/"
 OutDATADIR = "$HOMEDIR/NetworkModels_Data/Rcode_Data/2PopNextGen_Data"
@@ -43,9 +49,11 @@ dir3 = string(stimStr)
 savedir = dir0*dir1*dir2*dir3
 run = 1
 
+
+
 BOLD = load("$INDATADIR/$savedir/BOLD_NOstim_Run_$run.jld","BOLD_NOstim_Run_$run")[:,buffer:end]
 
-step_i = 10
+step_i = 5
 step_j = 300
 for i = 1:step_i:size(BOLD,2)
     j = i + step_j
@@ -65,28 +73,27 @@ global FCstim = zeros(139,139,counterT)
 global FCnostim = zeros(139,139,counterT) 
 
 
-runs = [1,2,3,4,5]
+runs = [1,2]
 for run in runs
-    for ii = 1
+   
+    global BOLDstim = load("$INDATADIR/$savedir/BOLD_stim_Run_$run.jld","BOLD_stim_Run_$run")[:,buffer:end]
+    BOLDnostim = load("$INDATADIR/$savedir/BOLD_NOstim_Run_$run.jld","BOLD_NOstim_Run_$run")[:,buffer:end]
 
-        BOLDstim = load("$INDATADIR/$savedir/BOLD_stim_Run_$run.jld","BOLD_stim_Run_$run")[:,buffer:end]
-        BOLDnostim = load("$INDATADIR/$savedir/BOLD_NOstim_Run_$run.jld","BOLD_NOstim_Run_$run")[:,buffer:end]
-
-        
-        counter = 1
-        for i = 1:step_i:size(BOLDstim,2)
-            j = i + step_j
-            if j < size(BOLDstim,2)
-                global FCstim[:,:,counter] += getFCwindows(BOLDstim[:,i:j];type=TYPE)/length(runs)
-                global FCnostim[:,:,counter] += getFCwindows(BOLDnostim[:,i:j];type=TYPE)/length(runs)
-                counter += 1
-                #println(counter)
-                
-            else
-                break
-            end
+    
+    counter = 1
+    for i = 1:step_i:size(BOLDstim,2)
+        j = i + step_j
+        if j < size(BOLDstim,2)
+            global FCstim[:,:,counter] += getFCwindows(BOLDstim[:,i:j];type=TYPE)/length(runs)
+            global FCnostim[:,:,counter] += getFCwindows(BOLDnostim[:,i:j];type=TYPE)/length(runs)
+            counter += 1
+            #println(counter)
+            
+        else
+            break
         end
     end
+
 end
 
 weights_stim = load("$INDATADIR/$savedir/weights_stim_Run_$run.jld","weights_stim_Run_$run")
@@ -139,6 +146,24 @@ if rv == 1
         plot(p1,p2,p3)
     end
 end
+
+sFC = size(FC_Array,3)
+
+fitFC = zeros(sFC,size(FCstim,3))
+fitFCmean = zeros(size(FCstim,3))
+fitFC2 = zeros(sFC,size(FCstim,3))
+fitFCmean2 = zeros(size(FCstim,3))
+
+for i = 1:size(FCstim,3)
+    fitFCmean[i] = fitR(FCnostim[:,:,i],mean(FC_Array[:,:,:],dims=3)[:,:])
+    fitFCmean2[i] = fitR(FCnostim[:,:,i].^2,mean(FC_Array[:,:,:].^2,dims=3)[:,:])
+    for j = 1:sFC
+        fitFC[j,i] = fitR(FCnostim[:,:,i],FC_Array[:,:,j])
+        fitFC2[j,i] = fitR(FCnostim[:,:,i].^2,FC_Array[:,:,j].^2)
+    end
+end
+
+
 
 
 

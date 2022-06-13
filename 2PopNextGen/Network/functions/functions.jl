@@ -15,7 +15,7 @@ end
 
 function make_uhist(tgrid,u)
     sizeT = size(tgrid,1)
-    t = tgrid[1]:(tgrid[end]-tgrid[1])/(sizeT -1):tgrid[end]
+    t = LinRange(tgrid[1],tgrid[end],size(u,2))
     interp = []
     for i = 1:size(u,1)
         if i == 1
@@ -197,9 +197,11 @@ end
 
 function h2(hparams,t;idxs = nothing)
     #history function used on windows > 1
-    u_hist = hparams
+    
+    #println(t)
+    #println(idxs)
         if t < 0
-            return u_hist[idxs](t)
+            return hparams[idxs](t)
         end
 end
 
@@ -281,19 +283,20 @@ function findBestFit(R,FC_Array)
     
 end
         
-function makeHistMat!(HistMat::Array{Float64},h,hparams,N,lags::Array{Float64},t::Float64)
+function makeHistMat!(HistMat::Array{Float64},h,u,hparams,N,lags::Array{Float64},t::Float64)
     for i = 1:N
         for j = 1:N
             if lags[i,j] > 0.0
                 HistMat[i,j] = h(hparams,t-lags[j,i]; idxs=j)
+            else
+                HistMat[i,j] = u[j]
             end
         end
     end
 end
 
-function make_d!(d,W,HistMat)
+function make_d!(d,W,u,HistMat)
     d .= sum(W.*HistMat,dims=2)
-
 end
         
 

@@ -9,6 +9,7 @@ function NGModelRun(κS,wS,startAdapt)
     BOLD_out = zeros(N,size_out,nWindows)
        
     for j = 1:nWindows
+        global nWindow = j
        
          
         if nWindows > 1
@@ -40,7 +41,7 @@ function NGModelRun(κS,wS,startAdapt)
         clags = cat(unique(reshape(lags[lags.>0.0],length(lags[lags.>0.0]))),1.0,dims=1)
         println(clags)
     
-        global p = (hparams,j)
+        global p = hparams
 
         if opts.synapses == "1stOrder"
             probDDE = NextGen
@@ -68,7 +69,7 @@ function NGModelRun(κS,wS,startAdapt)
         Current = currentE .+ currentI
 
     
-        BalloonIn= make_In(sol.t,Current)
+        BalloonIn= make_In(sol.t,sol[1:N,:])
         tspanB = (sol.t[1],sol.t[end])
         balloonParams = bP,BalloonIn,N
         if j == 1
